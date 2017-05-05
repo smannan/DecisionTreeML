@@ -41,10 +41,9 @@ def getTopMetaEntities():
       for entId in entity["ent_ids"]:
          idParts = entId.split('_')
          for entIp in entitiesData[idParts[0]][int(idParts[1])]["ips"]:
-               uids =[]
                for user in usersData[idParts[0]]:
-                  if user["ip"] == entIp and user["uid"] not in uids:
-                    uids.append(user["uid"])
+                  if user["ip"] == entIp:
+                    #uids.append(user["uid"])
                     numPosts = getPostCount(user["uid"], contentData[idParts[0]])
                     entPostCounts[str(entity["id"])] = entPostCounts[str(entity["id"])] + numPosts 
       print("%d %d" % (entity["id"], entPostCounts[str(entity["id"])]))  
