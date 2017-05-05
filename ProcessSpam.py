@@ -21,26 +21,34 @@ def getTopMetaEntities():
    npcagentFile = open('/lib/466/spam/npcagent/npcagent-content.json', 'r')
    npcagentContent = json.load(npcagentFile)
    contentData = {"gjams":gjamsContent, "ggjx":ggjxContent, "npcagent":npcagentContent}
-   
    gjamsFile2 = open('/lib/466/spam/gjams/gjams-entities.json', 'r')
    gjamsEntities = json.load(gjamsFile2)
    ggjxFile2 = open('/lib/466/spam/ggjx/ggjx-entities.json', 'r')
    ggjxEntities = json.load(ggjxFile2)
    npcagentFile2 = open('/lib/466/spam/npcagent/npcagent-entities.json', 'r')
    npcagentEntities = json.load(npcagentFile2)
-   print(ggjxEntities[0].keys())
    entitiesData = {"gjams":gjamsEntities, "ggjx":ggjxEntities, "npcagent":npcagentEntities}
+   gjamsFile3 = open('/lib/466/spam/gjams/gjams-users.json', 'r')
+   gjamsUsers = json.load(gjamsFile3)
+   ggjxFile3 = open('/lib/466/spam/ggjx/ggjx-users.json', 'r')
+   ggjxUsers = json.load(ggjxFile3)
+   npcagentFile3 = open('/lib/466/spam/npcagent/npcagent-users.json', 'r')
+   npcagentUsers = json.load(npcagentFile3)
+   usersData = {"gjams":gjamsUsers, "ggjx":ggjxUsers, "npcagent":npcagentUsers}
+   pots = ["gjams", "ggjx", "npcagent"]
    entPostCounts = {}
    for entity in meta:
       entPostCounts[str(entity["id"])] = 0
-      for entId in entity["ent_ids"]:
-         idParts = entId.split('_')
-         honeypotEntities = entitiesData[idParts[0]]
-         print(entId)
-         #print(honeypotEntities[int(idParts[1])])
-         for id in honeypotEntities[int(idParts[1])]["user_ids"]:
-            numPosts = getPostCount(id, contentData[idParts[0]])
-            entPostCounts[str(entity["id"])] = entPostCounts[str(entity["id"])] + numPosts 
+      for entIp in entity["ips"]:
+         #idParts = entId.split('_')
+         for potName in pots:
+            uids =[]
+            for user in usersData[potName]:
+               if user["ip"] == entIp and user["uid"] not in uids:
+                 uids.append(user["uid"])
+            for uid in uids:
+               numPosts = getPostCount(uid, contentData[potName])
+               entPostCounts[str(entity["id"])] = entPostCounts[str(entity["id"])] + numPosts 
       print(entPostCounts[str(entity["id"])])
    return result
 
