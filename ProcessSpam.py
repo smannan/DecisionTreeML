@@ -86,7 +86,7 @@ def getTopMetaEntities():
                     uids.append(user["uid"])
                     numPosts = getPostCount(user["uid"], contentData[potName])
                     entPostCounts[str(entity["id"])] = entPostCounts[str(entity["id"])] + numPosts 
-      #print("%d %d" % (entity["id"], entPostCounts[str(entity["id"])]))  
+      print("%d %d" % (entity["id"], entPostCounts[str(entity["id"])]))  
    values = sorted([(v, k) for (k, v) in entPostCounts.items()], reverse=True)
    for val in values[:50]:
       result.append(meta[int(val[1])])
