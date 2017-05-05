@@ -152,8 +152,8 @@ def main():
       else:
          trainingSet.append(allDocs[i])
       i=i+1
-    print(testSet[0])
-    print("done")
+   print(testSet[0])
+   print("done")
    #usersFile = open('/lib/466/spam/gjams/gjams-user.json', 'r')
    #users = json.load(usersFile)
    #accessFile = open('/lib/466/spam/gjams/gjams-access.json', 'r')
