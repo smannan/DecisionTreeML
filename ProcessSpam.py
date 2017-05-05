@@ -55,10 +55,11 @@ def getTopMetaEntities():
       entPostCounts[str(entity["id"])] = 0
       for entId in entity["ent_ids"]:
          idParts = entId.split('_')
+         print(entId) 
          for id in entitiesData[idParts[0]][int(idParts[1])]["user_ids"]:
              numPosts = getPostCount(id, contentData[idParts[0]])
              entPostCounts[str(entity["id"])] = entPostCounts[str(entity["id"])] + numPosts 
-      print(entPostCounts[str(entity["id"])])
+      print("%d %d" % (entity["id"], entPostCounts[str(entity["id"])]))
    return result
 
 def getFeatures(docType, record):
