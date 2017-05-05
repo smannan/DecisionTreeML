@@ -148,7 +148,7 @@ def main():
    print("creating test and training sets")
    while i<len(allDocs):
       if i%3==0:
-         testSet.append(allDocs[i][1])
+         testSet.append(allDocs[i])
       else:
          trainingSet.append(allDocs[i])
       i=i+1
