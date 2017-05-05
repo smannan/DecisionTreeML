@@ -41,7 +41,7 @@ def getTopMetaEntities():
       entPostCounts[str(entity["id"])] = 0
       for entId in entity["ent_ids"]:
          idParts = entId.split('_')
-         for entIp in entitiesData[idParts]["ips"]:
+         for entIp in entitiesData[idParts[0]]["ips"]:
             for potName in pots:
                uids =[]
                for user in usersData[potName]:
