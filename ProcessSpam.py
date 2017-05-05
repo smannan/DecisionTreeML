@@ -47,6 +47,8 @@ def getTopMetaEntities():
                     numPosts = getPostCount(user["uid"], contentData[idParts[0]])
                     entPostCounts[str(entity["id"])] = entPostCounts[str(entity["id"])] + numPosts 
       print("%d %d" % (entity["id"], entPostCounts[str(entity["id"])]))  
+   values = sorted([(v, k) for (k, v) in entPostCounts.items()], reverse=True)
+   print(values[:50])
    return result
 
 
@@ -79,8 +81,6 @@ def getTopMetaEntities2():
              numPosts = getPostCount(id, contentData[idParts[0]])
              entPostCounts[str(entity["id"])] = entPostCounts[str(entity["id"])] + numPosts 
       print("%d %d" % (entity["id"], entPostCounts[str(entity["id"])]))
-   values = sorted([(v, k) for (k, v) in entPostCounts.items()], reverse=True)
-   print(values[:50])
    return result
 
 def getFeatures(docType, record):
