@@ -35,20 +35,23 @@ def getTopMetaEntities():
    npcagentFile3 = open('/lib/466/spam/npcagent/npcagent-user.json', 'r')
    npcagentUsers = json.load(npcagentFile3)
    usersData = {"gjams":gjamsUsers, "ggjx":ggjxUsers, "npcagent":npcagentUsers}
+   pots = ["gjams", "ggjx", "npcagent"]
    entPostCounts = {}
    for entity in meta:
       entPostCounts[str(entity["id"])] = 0
-      for entId in entity["ent_ids"]:
-         idParts = entId.split('_')
-         for entIp in entitiesData[idParts[0]][int(idParts[1])]["ips"]:
-               for user in usersData[idParts[0]]:
-                  if user["ip"] == entIp:
-                    #uids.append(user["uid"])
+      for entIp in entity["ips"]:
+         for potName in pots:
+               uids = []
+               for user in usersData[potName]:
+                  if user["ip"] == entIp and user["uid"] not in uids:
+                    uids.append(user["uid"])
                     numPosts = getPostCount(user["uid"], contentData[idParts[0]])
                     entPostCounts[str(entity["id"])] = entPostCounts[str(entity["id"])] + numPosts 
       print("%d %d" % (entity["id"], entPostCounts[str(entity["id"])]))  
    values = sorted([(v, k) for (k, v) in entPostCounts.items()], reverse=True)
-   print(values[:50])
+   for val in values[:50]:
+      result.append(meta[int(val[1])])
+   print(result)
    return result
 
 
