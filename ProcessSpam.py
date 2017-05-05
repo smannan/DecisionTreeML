@@ -142,7 +142,18 @@ def main():
    allDocs = getPostsByTopEntities(entities, "gjams")
    print("got data")
    random.shuffle(allDocs)
-   
+   testSet = []
+   trainingSet = []
+   i=0
+   print("creating test and training sets")
+   while i<len(allDocs):
+      if i%3==0:
+         testSet.append(allDocs[i][1])
+      else:
+         trainingSet.append(allDocs[i])
+      i=i+1
+    print(testSet[0])
+    print("done")
    #usersFile = open('/lib/466/spam/gjams/gjams-user.json', 'r')
    #users = json.load(usersFile)
    #accessFile = open('/lib/466/spam/gjams/gjams-access.json', 'r')
