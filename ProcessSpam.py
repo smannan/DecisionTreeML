@@ -34,8 +34,10 @@ def getPostsByTopEntities(topEntities, potName):
    npcagentUsers = json.load(npcagentFile3)
    usersData = {"gjams":gjamsUsers, "ggjx":ggjxUsers, "npcagent":npcagentUsers}
    data = []
+   i=0
    for entity in topEntities:
-      entPostCounts[str(entity["id"])] = 0
+      print(i)
+      i=i+1
       for entIp in entity["ips"]:
          uids = []
          for user in usersData[potName]:
@@ -44,7 +46,7 @@ def getPostsByTopEntities(topEntities, potName):
                for post in contentData[potName]:
                    if post["author_id"] == user["uid"]:
                       post = getFeatures("content", post)
-                      data.append((str(entity["id"]), post))
+                      data.append((str(entity["id"]), post))       
    #print("%d %d" % (entity["id"], entPostCounts[str(entity["id"])]))  
    return data
 
