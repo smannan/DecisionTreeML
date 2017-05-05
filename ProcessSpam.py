@@ -28,6 +28,7 @@ def getTopMetaEntities():
    ggjxEntities = json.load(ggjxFile2)
    npcagentFile2 = open('/lib/466/spam/npcagent/npcagent-entities.json', 'r')
    npcagentEntities = json.load(npcagentFile2)
+   print(ggjxEntities[0].keys())
    entitiesData = {"gjams":gjamsEntities, "ggjx":ggjxEntities, "npcagent":npcagentEntities}
    entPostCounts = {}
    for entity in meta:
@@ -36,7 +37,7 @@ def getTopMetaEntities():
          idParts = entId.split('_')
          honeypotEntities = entitiesData[idParts[0]]
          print(entId)
-         print(honeypotEntities[int(idParts[1])])
+         #print(honeypotEntities[int(idParts[1])])
          for id in honeypotEntities[int(idParts[1])]["user_ids"]:
             numPosts = getPostCount(id, contentData[idParts[0]])
             entPostCounts[str(entity["id"])] = entPostCounts[str(entity["id"])] + numPosts 
