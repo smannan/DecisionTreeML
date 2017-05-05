@@ -76,9 +76,6 @@ def getTopMetaEntities():
    usersData = {"gjams":gjamsUsers, "ggjx":ggjxUsers, "npcagent":npcagentUsers}
    pots = ["gjams", "ggjx", "npcagent"]
    entPostCounts = {}
-   for user in ggjxUsers:
-      if "IPs" in user.keys():
-         print(user.keys())
    for entity in meta:
       entPostCounts[str(entity["id"])] = 0
       for entIp in entity["ips"]:
