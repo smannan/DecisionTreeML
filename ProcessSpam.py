@@ -46,9 +46,8 @@ def getTopMetaEntities():
             for user in usersData[potName]:
                if user["ip"] == entIp and user["uid"] not in uids:
                  uids.append(user["uid"])
-            for uid in uids:
-               numPosts = getPostCount(uid, contentData[potName])
-               entPostCounts[str(entity["id"])] = entPostCounts[str(entity["id"])] + numPosts 
+                 numPosts = getPostCount(user["uid"], contentData[potName])
+                 entPostCounts[str(entity["id"])] = entPostCounts[str(entity["id"])] + numPosts 
       print(entPostCounts[str(entity["id"])])
    return result
 
