@@ -28,11 +28,11 @@ def getTopMetaEntities():
    npcagentFile2 = open('/lib/466/spam/npcagent/npcagent-entities.json', 'r')
    npcagentEntities = json.load(npcagentFile2)
    entitiesData = {"gjams":gjamsEntities, "ggjx":ggjxEntities, "npcagent":npcagentEntities}
-   gjamsFile3 = open('/lib/466/spam/gjams/gjams-users.json', 'r')
+   gjamsFile3 = open('/lib/466/spam/gjams/gjams-user.json', 'r')
    gjamsUsers = json.load(gjamsFile3)
-   ggjxFile3 = open('/lib/466/spam/ggjx/ggjx-users.json', 'r')
+   ggjxFile3 = open('/lib/466/spam/ggjx/ggjx-user.json', 'r')
    ggjxUsers = json.load(ggjxFile3)
-   npcagentFile3 = open('/lib/466/spam/npcagent/npcagent-users.json', 'r')
+   npcagentFile3 = open('/lib/466/spam/npcagent/npcagent-user.json', 'r')
    npcagentUsers = json.load(npcagentFile3)
    usersData = {"gjams":gjamsUsers, "ggjx":ggjxUsers, "npcagent":npcagentUsers}
    pots = ["gjams", "ggjx", "npcagent"]
