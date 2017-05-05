@@ -36,6 +36,7 @@ def getTopMetaEntities():
          idParts = entId.split('_')
          honeypotEntities = entitiesData[idParts[0]]
          print(entId)
+         print(honeypotEntities[int(idParts[1])].keys())
          for id in honeypotEntities[int(idParts[1])]["user_ids"]:
             numPosts = getPostCount(id, contentData[idParts[0]])
             entPostCounts[str(entity["id"])] = entPostCounts[str(entity["id"])] + numPosts 
