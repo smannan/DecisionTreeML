@@ -15,19 +15,29 @@ def getTopMetaEntities():
    metaFile = open('meta-entities.json', 'r')
    meta = json.load(metaFile)
    gjamsFile = open('/lib/466/spam/gjams/gjams-content.json', 'r')
-   gjams = json.load(gjamsFile)
+   gjamsContent = json.load(gjamsFile)
    ggjxFile = open('/lib/466/spam/ggjx/ggjx-content.json', 'r')
-   ggjx = json.load(ggjxFile)
+   ggjxContent = json.load(ggjxFile)
    npcagentFile = open('/lib/466/spam/npcagent/npcagent-content.json', 'r')
-   npcagent = json.load(npcagentFile)
-   contentData = {"gjams":gjams, "ggjx":ggjx, "npcagent":npcagent}
+   npcagentContent = json.load(npcagentFile)
+   contentData = {"gjams":gjamsContent, "ggjx":ggjxContent, "npcagent":npcagentContent}
+   
+   gjamsFile2 = open('/lib/466/spam/gjams/gjams-entities.json', 'r')
+   gjamsEntities = json.load(gjamsFile2)
+   ggjxFile2 = open('/lib/466/spam/ggjx/ggjx-entities.json', 'r')
+   ggjxEntities = json.load(ggjxFile2)
+   npcagentFile2 = open('/lib/466/spam/npcagent/npcagent-entities.json', 'r')
+   npcagentEntities = json.load(npcagentFile2)
+   entitiesData = {"gjams":gjamsEntities, "ggjx":ggjxEntities, "npcagent":npcagentEntities}
    entPostCounts = {}
    for entity in meta:
       entPostCounts[str(entity["id"])] = 0
-      for id in entity["ent_ids"]:
-         idParts = id.split('_')
-         numPosts = getPostCount(int(idParts[1]), contentData[idParts[0]])
-         entPostCounts[str(entity["id"])] = entPostCounts[str(entity["id"])] + numPosts 
+      for entId in entity["ent_ids"]:
+         idParts = entId.split('_')
+         honeypotEntities = entitiesData[idParts[0]]
+         for id in honeypotEntities[int(idParts[1])]["user_ids"]:
+            numPosts = getPostCount(id, contentData[idParts[0]])
+            entPostCounts[str(entity["id"])] = entPostCounts[str(entity["id"])] + numPosts 
       print(entPostCounts[str(entity["id"])])
    return result
 
