@@ -22,7 +22,7 @@ def getTopMetaEntities():
    npcagentContent = json.load(npcagentFile)
    contentData = {"gjams":gjamsContent, "ggjx":ggjxContent, "npcagent":npcagentContent}
    #gjamsFile2 = open('/lib/466/spam/gjams/gjams-entities.json', 'r')
-   gjamsFile2 = open('gjams-entities-id.json', 'r')
+   gjamsFile2 = open('gjams-entities-ids.json', 'r')
    gjamsEntities = json.load(gjamsFile2)
    ggjxFile2 = open('ggjx-entities-ids.json', 'r')
    #ggjxFile2 = open('/lib/466/spam/ggjx/ggjx-entities.json', 'r')
