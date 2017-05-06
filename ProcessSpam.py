@@ -199,8 +199,8 @@ def main():
    args = sys.argv[1:]
    if not args or len(args) < 1:
     print("usage: ProcessSpam.py filename")
-    print('exámple'.upper())
-    print(unicode('exámple').upper())
+    print('ex\xc3\xa1mple'.upper())
+    print(unicode('ex\xc3\xa1mple').upper())
     sys.exit(1)
    filename = args[0]
    potName = filename.split('/')[-1]
