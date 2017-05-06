@@ -4,6 +4,9 @@ import os
 import random
 import json
 
+titleVocab = []
+textVocab = []
+
 def getPostCount(id, allPosts):
    count =0
    for post in allPosts:
@@ -13,6 +16,8 @@ def getPostCount(id, allPosts):
    
 def getPostsByTopEntities(topEntities, dirName, potName):
    print("getting posts")
+   global titleVocab 
+   global textVocab 
    contentFile = open(dirName +'/'+potName+'-content.json', 'r')
    content = json.load(contentFile)
    usersFile = open(dirName +'/'+potName+'-user.json', 'r')
@@ -28,7 +33,8 @@ def getPostsByTopEntities(topEntities, dirName, potName):
             uids.append(user["uid"])
             for post in content:
                if post["author_id"] == user["uid"]:
-                  post = getFeatures("content", post)
+                  
+                  #post = getFeatures("content", post)
                   data.append((str(entity["id"]), post))    
    return data
    
@@ -178,6 +184,12 @@ def getTopMetaEntities2():
       print("%d %d" % (entity["id"], entPostCounts[str(entity["id"])]))
    return result
 
+def updateVocabs(data, vocab):
+   data = re.sub(r'[\.;:,\-!\?]', r'', data)
+   words = set(data.split(' '))
+   
+   
+
 def getFeatures(docType, record):
    processedRecord = record
    return processedRecord
@@ -186,19 +198,21 @@ def main():
    args = sys.argv[1:]
    if not args or len(args) < 1:
     print("usage: ProcessSpam.py filename")
+    print(re.sub(r'\sAND\s', ' & ', 'Baked And Beans And Spam', flags=re.IGNORECASE))
+    print(re.subn(r'\sAND\s', ' & ', 'Baked And Beans And Spam', flags=re.IGNORECASE))
     sys.exit(1)
    filename = args[0]
    potName = filename.split('/')[-1]
    if os.path.exists(filename) and os.path.exists(filename + "/" + potName+"-content.json"):
       #entities = getTopMetaEntities()
       #allDocs = getPostsByTopMetaEntities(entities, "gjams")
-      entities = getTopEntities(50, filename, potName)
+      entities = getTopEntities(20, filename, potName)
       allDocs = getPostsByTopEntities(entities, filename, potName)
       print("got data")
       random.shuffle(allDocs)
-      i = len(allDocs)/3
+      cutoff  = len(allDocs)/3
       print("creating test and training sets")
-      testSet, trainingSet = allDocs[:i], allDocs[i:]
+      testSet, trainingSet = allDocs[:cutoff ], allDocs[cutoff:]
       print(len(testSet))
       print(len(trainingSet))
       print("done")
