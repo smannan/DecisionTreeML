@@ -198,8 +198,8 @@ def main():
    args = sys.argv[1:]
    if not args or len(args) < 1:
     print("usage: ProcessSpam.py filename")
-    print(re.sub(r'\sAND\s', ' & ', 'Baked And Beans And Spam', flags=re.IGNORECASE))
-    print(re.subn(r'\sAND\s', ' & ', 'Baked And Beans And Spam', flags=re.IGNORECASE))
+    print('exámple'.upper())
+    print(unicode('exámple').upper())
     sys.exit(1)
    filename = args[0]
    potName = filename.split('/')[-1]
