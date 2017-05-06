@@ -18,6 +18,7 @@ def getPostsByTopEntities(topEntities, dirName, potName):
    usersFile = open(dirName +'/'+potName+'-user.json', 'r')
    users = json.load(usersFile)
    data =[]
+   i=0
    for entity in topEntities:
       print(i)
       i=i+1
@@ -35,7 +36,7 @@ def getPostsByTopEntities(topEntities, dirName, potName):
    
 def getTopEntities(count, dirName, potName):
    result = []
-   print("getting meta entities")
+   print("getting entities")
    contentFile = open(dirName +'/'+potName+'-content.json', 'r')
    content = json.load(contentFile)
    usersFile = open(dirName +'/'+potName+'-user.json', 'r')
