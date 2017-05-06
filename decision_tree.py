@@ -216,7 +216,7 @@ class ML:
 					return (child.label)
 
 
-
+# test filename = test_data.txt
 def main():
 	filename = sys.argv[1:][0]
 	tree = ML()
