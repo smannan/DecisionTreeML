@@ -1,6 +1,7 @@
 #!/usr/bin/python
 import sys
 import os
+import re
 import random
 import json
 
@@ -33,7 +34,6 @@ def getPostsByTopEntities(topEntities, dirName, potName):
             uids.append(user["uid"])
             for post in content:
                if post["author_id"] == user["uid"]:
-                  
                   #post = getFeatures("content", post)
                   data.append((str(entity["id"]), post))    
    return data
