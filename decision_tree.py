@@ -1,14 +1,11 @@
 
+import copy
 import math
-import numpy as np
 import sys
 
-THRESH = 0.3
+from collections import OrderedDict
 
-class Tree:
-	def __init__(self, label):
-		self.label = label
-		self.children = []
+THRESH = 0.0
 
 # read data from a comma-seperated text file
 # first line is header giving attribute names
@@ -24,127 +21,211 @@ def read_input(filename):
 	data = []
 	for line in f[1:]:
 		line = line.split(',')
-		data.append(line[:-1])
-		labels.append(line[-1])
+		feat = OrderedDict()
+		for item in zip(attributes, line[:-1]):
+			feat[item[0]] = item[1]
 
-	return (attributes, labels, np.array(data))
+		data.append((line[-1], feat))
 
-# return the majority class found in D
-# D is a 1-dim list of classes
-def find_majority_class(D):
-	counts = {}
-	max_count = 1
-	majority = 0
+	return (data)
 
-	for item in D:
-		if item in counts:
-			D[item] += 1
+class Tree:
+		def __init__(self, label):
+			self.label = label
+			self.children = []
+
+class ML:
+	def __init__(self):
+		self.root = Tree("root")
+
+	def post_traversal(self, T, space):
+		if T:
+			print ('{0}{1}'.format(' '.join([''] * space), T.label))
+			for child in T.children:
+				self.post_traversal(child, space + 4)	
+
+	# return the majority class found in D
+	# D is a 1-dim list of classes
+	def find_majority_class(self, D):
+		counts = {}
+		max_count = 1
+		majority = 0
+
+		for item in D:
+			if item[0] in counts:
+				counts[item[0]] += 1
+			else:
+				counts[item[0]] = 1
+
+		for key in counts.keys():
+			if counts[key] > max_count:
+				majority = key
+				max_count = counts[key]
+
+		return majority
+
+	# compute entropy of a dataset
+	def entropy(self, D):
+		entropy = 0
+		counts = {}
+
+		for row in D:
+			if row[0]in counts:
+				counts[row[0]] += 1
+			else:
+				counts[row[0]] = 1
+
+		num_labels = len(D)
+		for label in counts.keys():
+			val = float(counts[label]) / num_labels
+			entropy += -(val * math.log(val, 2))
+
+		return entropy
+
+	# index = which attribute to partition 
+	# data on
+	# N = # of possible values the attribute 
+	# can take
+	# returns a {}
+	# key = attribute value
+	# value = list of labels
+	def partition_data(self, D, index):
+		partition = {}
+		split = {}
+
+		for i in range(len(D)):
+			row = D[i][1]
+			attr = row[row.keys()[index]]
+
+			if attr in partition:
+				partition[attr].append(D[i][0])
+				split[attr].append((D[i][0], row))
+
+			else:
+				partition[attr] = []
+				partition[attr].append(D[i][0])
+
+				split[attr] = []
+				split[attr].append((D[i][0], row))
+
+		return partition, split
+
+	# determine the level of impurity
+	# that would result from splitting
+	# the data on attribute A
+	def impurity_eval(self, D, index):
+		impurity = 0
+		num_samples = float(len(D))
+		partition, split = self.partition_data(D, index)
+
+		for key in partition.keys():
+			impurity += len(partition[key]) / num_samples * \
+				self.entropy(partition[key])
+
+		return impurity, split
+
+	# determine if the data has just one class
+	def same_class(self, D):
+		classes = set()
+		
+		for row in D:
+			classes.add(row[0])
+		
+		return len(classes) == 1
+
+	# Implements the decision tree algo
+	# D = tuple of (labels, features)
+	# features = nxp numpy array where
+	# n = number of samples and p = number of 
+	# attributes
+	# A = list of attributes
+	# T = tree node
+	def decision_tree(self, D, T):
+		# if all samples are of the same class, return
+		if (self.same_class(D)):
+			return Tree(str(D[0][0]))
+
+		# if the attribute list is empty
+		elif (not D[0][1].keys()):
+			return Tree(str(self.find_majority_class(D)))
+
 		else:
-			D[item] = 1
+			# determine the current level of impurity
+			p0 = self.entropy(D)
+			max_reduction = 0
+			Ag = None
+			new_split = None
 
-	for key in counts.keys():
-		if counts[key] > max_count:
-			majority = key
-			max_count = counts[key]
+			# determine impurity level that would 
+			# result in splitting on the attribute
+			# then choose the attribute that gives
+			# the greatest impurity reduction
+			attr = D[0][1].keys()
+			for i in range(len(attr)):
+				pi, split = self.impurity_eval(D, i)
+				if p0 - pi > max_reduction:
+					max_reduction = p0 - pi
+					Ag = attr[i]
+					new_split = split
 
-	return majority
+			# if the impurity reduction is not 
+			# greater than some threshold,
+			# return the majority class
+			if max_reduction < THRESH:
+				return Tree(str(self.find_majority_class(D)))
 
-# compute entropy of a dataset
-def entropy(D):
-	entropy = 0
-	counts = {}
+			# can further reduce impurity within samples
+			else:
+				feat = new_split.keys()
+				Tg = Tree(str(Ag))
+				T.children.append(Tg)
 
-	for label in D:
-		if label in counts:
-			counts[label] += 1
+				for key, split in new_split.items():
+					for row in split:
+						row[1].pop(Ag, None)
+
+				for f in feat:
+					Dj = new_split[f]
+					if (Dj):
+						Tf = Tree(str(f))
+						T_new = self.decision_tree(Dj, Tf)
+						Tf.children.append(T_new)
+						Tg.children.append(Tf)
+				return Tg
+
+	def train(self, D):
+		self.decision_tree(D, self.root)
+
+	def classify(self, feature, root):
+		# print ('On node {0}'.format(root.label))
+
+		if not root.children:
+			# print ('returning label {0}'.format(root.label))
+			return (root.label)
+
 		else:
-			counts[label] = 1
+			for child in root.children:
+				# print ('Child {0}'.format(child.label))
+				if child.label in feature and child.children:
+					for grandchild in child.children:
+						if feature[child.label] == grandchild.label:
+							# print ('Moving to node {0}'.format(grandchild.label))
+							return self.classify(feature, grandchild)
+				else:
+					# print ('returning label {0}'.format(child.label))
+					return (child.label)
 
-	num_labels = len(D)
-	for label in counts.keys():
-		val = float(counts[label]) / num_labels
-		entropy += -(val * math.log(val, 2))
 
-	return entropy
-
-def partition_data(D, index):
-	features = D[1]
-	labels = D[0]
-	attr_vals = set(features[:,index])
-	partition = {}
-
-	for i in range(features.shape[0]):
-		row = features[i,:]
-		attr = row[index]
-		if attr in partition:
-			partition[attr].append(labels[i])
-		else:
-			partition[attr] = []
-			partition[attr].append(labels[i])
-
-	return partition
-
-# determine the level of impurity
-# that would result from splitting
-# the data on attribute A
-def impurity_eval(D, index):
-	impurity = 0
-	num_samples = float(D[1].shape[0])
-	partition = partition_data(D, index)
-
-	for key in partition.keys():
-		impurity += len(partition[key]) / num_samples * \
-			entropy(partition[key])
-
-	return impurity, partition
-
-# Implements the decision tree algo
-# D = tuple of (labels, features)
-# features = nxp numpy array where
-# n = number of samples and p = number of 
-# attributes
-# A = list of attributes
-# T = tree node
-def decisionTree(D, A, T):
-	# if all samples are of the same class, return
-	if (len(set(D[0])) == 1):
-		return Tree(D[0][0])
-
-	# if the attribute list is empty
-	elif (len(A) == 0):
-		return Tree(find_majority_class(D[0]))
-
-	else:
-		# determine the current level of impurity
-		p0 = entropy(D[0])
-		max_reduction = 0
-		Ag = None
-
-		# determine impurity level that would 
-		# result in splitting on the attribute
-		# then choose the attribute that gives
-		# the greatest impurity reduction
-		num_attr = D[1].shape[1]
-		for i in range(num_attr):
-			pi, partition = impurity_eval(D, i)
-			if p0 - pi > max_reduction:
-				max_reduction = p0 - pi
-				Ag = i
-
-		# if the impurity reduction is not 
-		# greater than some threshold,
-		# return the majority class
-		if max_reduction < THRESH:
-			return Tree(find_majority_class(D[0]))
-
-		# can further reduce impurity within samples
-		else:
-			T_new = Tree(Ag)
 
 def main():
 	filename = sys.argv[1:][0]
-	attr, labels, features = read_input(filename)
-	D = (labels, features)
+	tree = ML()
+	D = read_input(filename)
+	tree.train(D)
+	tree.post_traversal(tree.root, 0)
+	test = {'Age':'young','Has_job':'true','Own_house':'false','Credit_rating':'false'}
+	pred = tree.classify(test, tree.root)
+	print ("Predicted {0} for {1}".format(pred, test))
 
 if __name__ == "__main__":
 	main()
