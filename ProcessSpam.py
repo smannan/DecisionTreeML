@@ -1,5 +1,6 @@
 #!/usr/bin/python
 import sys
+import os
 import random
 import json
 
@@ -10,7 +11,55 @@ def getPostCount(id, allPosts):
          count = count +1
    return count
    
-def getPostsByTopEntities(topEntities, potName):
+def getPostsByTopEntities(topEntities, dirName, potName):
+   print("getting posts")
+   contentFile = open(dirName +'/'+potName+'-content.json', 'r')
+   content = json.load(contentFile)
+   usersFile = open(dirName +'/'+potName+'-user.json', 'r')
+   users = json.load(usersFile)
+   data =[]
+   for entity in topEntities:
+      print(i)
+      i=i+1
+      uids = [] 
+      for user in users:
+         if user["ip"] in entity["ips"] and user["uid"] not in uids:
+            uids.append(user["uid"])
+            for post in content:
+               if post["author_id"] == user["uid"]:
+                  post = getFeatures("content", post)
+                  data.append((str(entity["id"]), post))    
+   return data
+   
+   
+   
+def getTopEntities(count, dirName, potName):
+   result = []
+   print("getting meta entities")
+   contentFile = open(dirName +'/'+potName+'-content.json', 'r')
+   content = json.load(contentFile)
+   usersFile = open(dirName +'/'+potName+'-user.json', 'r')
+   users = json.load(usersFile)
+   entitiesFile = open(dirName +'/'+potName+'-entities.json', 'r')
+   entities = json.load(entitiesFile)
+   entPostCounts = {}
+   for entity in entities:
+      entPostCounts[str(entity["id"])] = 0
+      uids = [] 
+      for user in users:
+         if user["ip"] in entity["ips"] and user["uid"] not in uids:
+            uids.append(user["uid"])
+            numPosts = getPostCount(user["uid"], content)
+            entPostCounts[str(entity["id"])] = entPostCounts[str(entity["id"])] + numPosts
+      print("%d %d" % (entity["id"], entPostCounts[str(entity["id"])]))
+   values = sorted([(v, k) for (k, v) in entPostCounts.items()], reverse=True)
+   for val in values[:count]:
+      result.append(meta[int(val[1])])
+   #print(result)
+   print([t for t in values[:count]])
+   return result
+   
+def getPostsByTopMetaEntities(topEntities, potName):
    print("getting posts")
    gjamsFile = open('/lib/466/spam/gjams/gjams-content.json', 'r')
    gjamsContent = json.load(gjamsFile)
@@ -138,22 +187,23 @@ def main():
     print("usage: ProcessSpam.py filename")
     sys.exit(1)
    filename = args[0]
-   entities = getTopMetaEntities()
-   allDocs = getPostsByTopEntities(entities, "gjams")
-   print("got data")
-   random.shuffle(allDocs)
-   testSet = []
-   trainingSet = []
-   i=0
-   print("creating test and training sets")
-   while i<len(allDocs):
-      if i%3==0:
-         testSet.append(allDocs[i])
-      else:
-         trainingSet.append(allDocs[i])
-      i=i+1
-   print(testSet[0])
-   print("done")
+   potName = filename.split('/')[-1]
+   if os.path.exists(filename) and os.path.exists(filename + "/" + potName+"-content.json"):
+      #entities = getTopMetaEntities()
+      #allDocs = getPostsByTopMetaEntities(entities, "gjams")
+      entities = getTopEntities(50, filename, potName)
+      allDocs = getPostsByTopEntities(entities, filename, potName)
+      print("got data")
+      random.shuffle(allDocs)
+      i = len(allDocs)/3
+      print("creating test and training sets")
+      testSet, trainingSet = allDocs[:i], allDocs[i:]
+      print(len(testSet))
+      print(len(trainingSet))
+      print("done")
+   else:
+      print("directory %s isn't a honeypot directory" % filename)
+      sys.exit(1)
    #usersFile = open('/lib/466/spam/gjams/gjams-user.json', 'r')
    #users = json.load(usersFile)
    #accessFile = open('/lib/466/spam/gjams/gjams-access.json', 'r')
