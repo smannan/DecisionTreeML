@@ -54,7 +54,7 @@ def getTopEntities(count, dirName, potName):
       print("%d %d" % (entity["id"], entPostCounts[str(entity["id"])]))
    values = sorted([(v, k) for (k, v) in entPostCounts.items()], reverse=True)
    for val in values[:count]:
-      result.append(meta[int(val[1])])
+      result.append(entities[int(val[1])])
    #print(result)
    print([t for t in values[:count]])
    return result
