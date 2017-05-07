@@ -291,7 +291,10 @@ def main():
       print(testSet[0][0])
       tp, tn, fp, fn = tree.getStats(testSet[0][0],testSet)
       print(tp, tn, fp, fn)
-      print(tree.getF1(tp, tn, fp, fn))
+      if(tp>0):
+         print(tree.getF1(tp, tn, fp, fn))
+      else:
+         print("No true positivex")
       #print(len(testSet))
       #print(len(trainingSet))
       print("done")
