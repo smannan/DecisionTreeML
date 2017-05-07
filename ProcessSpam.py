@@ -229,11 +229,11 @@ def getFeatures(docType, record):
       titleWords = parseTextBlock(record["title"], COMMON_NUM)
       for i in range(0, len(titleVocab)):
          colName = "title_word_" + str(i)
-         processedRecord[colName] = 1 if titleVocab[i] in titleWords else 0
+         processedRecord[colName] = "True" if titleVocab[i] in titleWords else "False"
       textWords = parseTextBlock(record["text"], COMMON_NUM)
       for i in range(0, len(textVocab)):
          colName = "text_word_" + str(i)
-         processedRecord[colName] = 1 if textVocab[i] in textWords else 0
+         processedRecord[colName] = "True" if textVocab[i] in textWords else "False"
    else:
       processedRecord = record
    return processedRecord
@@ -283,6 +283,7 @@ def main():
       print(tree.accuracy(testSet))
       print("getting f1 score")
       tp, tn, fp, fn = tree.getStats('1783',testSet)
+      print(tp, tn, fp, fn)
       print(tree.getF1(tp, tn, fp, fn))
       #print(len(testSet))
       #print(len(trainingSet))
