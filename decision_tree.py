@@ -187,7 +187,7 @@ class ML:
 				for f in feat:
 					Dj = new_split[f]
 					if (Dj):
-						Tf = Tree(str(f))
+						Tf = Tree(unicode(f))
 						T_new = self.decision_tree(Dj, Tf)
 						Tf.children.append(T_new)
 						Tg.children.append(Tf)
