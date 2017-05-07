@@ -5,7 +5,7 @@ import sys
 
 from collections import OrderedDict
 
-THRESH = 1.01
+THRESH = 3.2
 
 # read data from a comma-seperated text file
 # first line is header giving attribute names
