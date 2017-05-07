@@ -263,7 +263,7 @@ def main():
       print("getting accuracy")
       print(tree.accuracy(testSet))
       print("getting f1 score")
-      print(tree.getF1(tree.getStats('1783',testSet))
+      print(tree.getF1(tree.getStats('1783',testSet)))
       #print(len(testSet))
       #print(len(trainingSet))
       print("done")
