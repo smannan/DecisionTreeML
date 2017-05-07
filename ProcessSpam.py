@@ -278,7 +278,7 @@ def main():
       tree = decision_tree.ML()
       print("training decision tree")
       tree.train(trainingSet)
-      tree.post_traversal(tree.root, 0)
+      #tree.post_traversal(tree.root, 0)
       print("getting accuracy")
       print(tree.accuracy(testSet))
       print("getting f1 score")

@@ -232,7 +232,7 @@ class ML:
 	   fnCount = 0.0
 	   for row in D:
 	      pred = self.classify(row[1], self.root)
-	      print(pred == classification, row[0] == classification)
+	      #print(pred == classification, row[0] == classification)
 	      if pred == classification:
 	         #classified positive
 	         if row[0] == classification:
@@ -254,6 +254,7 @@ class ML:
 	def getF1(self, tp, tn, fp, fn):
 	   precision = tp / (tp + fp)
 	   recall = tp / (tp + fn)
+	   print(precision, recall)
 	   f1Score = (2.0 * precision * recall) / (precision + recall)
 	   return f1Score
 
