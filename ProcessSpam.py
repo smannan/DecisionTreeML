@@ -7,6 +7,7 @@ import re
 import random
 import json
 
+COMMON_NUM = 5
 titleVocab = []
 textVocab = []
 languages = set() 
@@ -193,14 +194,26 @@ def getTopMetaEntities2():
              entPostCounts[str(entity["id"])] = entPostCounts[str(entity["id"])] + numPosts 
       print("%d %d" % (entity["id"], entPostCounts[str(entity["id"])]))
    return result
+   
+def getNCommonWords(words, n):
+   wordCounts = {}
+   for word in words:
+      if word in wordCounts:
+         wordCounts[word] += 1
+      else:
+         wordCounts[word] = 1
+   wordCounts = sorted([(v, k) for (k, v) in wordCounts.items()], reverse=True)
+   wordCounts = [v for (k, v) in wordCounts[:n].items()]
+   return wordCounts
 
-def parseTextBlock(data):
+def parseTextBlock(data, numWords):
    data = re.sub(r'[\.;:,\-!\?]', r'', data)
    data = data.lower()
-   return list(set(data.split(' ')))
+   return getNCommonWords(data.split(' '), numWords)
+   #return list(set(data.split(' ')))
 
 def updateVocabs(data, vocab):
-   words = set(parseTextBlock(data))
+   words = set(parseTextBlock(data, COMMON_NUM))
    allWords = set(vocab) | words
    return list(allWords)
    
@@ -213,11 +226,11 @@ def getFeatures(docType, record):
       processedRecord["author_id"] = record["author_id"]
       #processedRecord["title"] = record["title"]
       #processedRecord["text"] = record["text"]
-      titleWords = parseTextBlock(record["title"])
+      titleWords = parseTextBlock(record["title"], COMMON_NUM)
       for i in range(0, len(titleVocab)):
          colName = "title_word_" + str(i)
          processedRecord[colName] = 1 if titleVocab[i] in titleWords else 0
-      textWords = parseTextBlock(record["text"])
+      textWords = parseTextBlock(record["text"], COMMON_NUM)
       for i in range(0, len(textVocab)):
          colName = "text_word_" + str(i)
          processedRecord[colName] = 1 if textVocab[i] in textWords else 0
