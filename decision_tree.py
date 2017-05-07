@@ -232,6 +232,7 @@ class ML:
 	   fnCount = 0.0
 	   for row in D:
 	      pred = self.classify(row[1], self.root)
+	      print(pred == classification, row[0] == classification)
 	      if pred == classification:
 	         #classified positive
 	         if row[0] == classification:
