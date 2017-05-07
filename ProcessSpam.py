@@ -190,10 +190,13 @@ def getTopMetaEntities2():
       print("%d %d" % (entity["id"], entPostCounts[str(entity["id"])]))
    return result
 
-def updateVocabs(data, vocab):
+def parseTextBlock(data):
    data = re.sub(r'[\.;:,\-!\?]', r'', data)
    data = data.lower()
-   words = set(data.split(' '))
+   return list(set(data.split(' ')))
+
+def updateVocabs(data, vocab):
+   words = set(parseTextBlock(data))
    allWords = set(vocab) | words
    return list(allWords)
    
@@ -201,7 +204,19 @@ def updateVocabs(data, vocab):
 def getFeatures(docType, record):
    global titleVocab 
    global textVocab 
-   processedRecord = record
+   processedRecord = {}
+   if docType == "content":
+      processedRecord["author_id"] = record["author_id"]
+      titleWords = parseTextBlock(record["title"])
+      for i in range(0, len(titleVocab)):
+         colName = "title_word_" + i
+         processedRecord[colName] = 1 if titleVocab[i] in titleWords else 0
+      textWords = parseTextBlock(record["text"])
+      for i in range(0, len(textVocab)):
+         colName = "text_word_" + i
+         processedRecord[colName] = 1 if textVocab[i] in textWords else 0
+   else:
+      processedRecord = record
    return processedRecord
    
 def extractFeatures(docs):
@@ -217,8 +232,6 @@ def main():
    args = sys.argv[1:]
    if not args or len(args) < 1:
     print("usage: ProcessSpam.py filename")
-    print('ex\xe3mple'.upper())
-    print(unicode('ex\xe3mple').upper())
     sys.exit(1)
    filename = args[0]
    potName = filename.split('/')[-1]
@@ -233,13 +246,14 @@ def main():
       print(len(textVocab))
       print("getting features")
       allDocs = extractFeatures(allDocs)
+      print(allDocs[0][1].keys())
       print("got data")
       random.shuffle(allDocs)
       cutoff  = len(allDocs)/3
       print("creating test and training sets")
       testSet, trainingSet = allDocs[:cutoff ], allDocs[cutoff:]
-      #print(len(testSet))
-      #print(len(trainingSet))
+      print(len(testSet))
+      print(len(trainingSet))
       print("done")
    else:
       print("directory %s isn't a honeypot directory" % filename)
