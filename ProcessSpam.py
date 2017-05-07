@@ -7,7 +7,7 @@ import re
 import random
 import json
 
-COMMON_NUM = 5
+COMMON_NUM = 10
 titleVocab = []
 textVocab = []
 languages = set() 
@@ -282,6 +282,7 @@ def main():
       print("getting accuracy")
       print(tree.accuracy(testSet))
       print("getting f1 score")
+      #print(type(testSet[0][0]))
       print(testSet[0][0])
       tp, tn, fp, fn = tree.getStats(testSet[0][0],testSet)
       print(tp, tn, fp, fn)
