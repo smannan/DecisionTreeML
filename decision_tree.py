@@ -249,11 +249,11 @@ class ML:
 	            tnCount = tnCount + 1.0
 	            return tpCount, tnCount, fpCount, fnCount
 
-    def getF1(self, tp, tn, fp, fn):
-       precision = tp / (tp + fp)
-       recall = tp / (tp + fn)
-       f1Score = (2.0 * precision * recall) / (precision + recall)
-       return f1Score
+	def getF1(self, tp, tn, fp, fn):
+	   precision = tp / (tp + fp)
+	   recall = tp / (tp + fn)
+	   f1Score = (2.0 * precision * recall) / (precision + recall)
+	   return f1Score
 
 # test filename = test_data.txt
 def main():
