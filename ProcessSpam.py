@@ -209,11 +209,11 @@ def getFeatures(docType, record):
       processedRecord["author_id"] = record["author_id"]
       titleWords = parseTextBlock(record["title"])
       for i in range(0, len(titleVocab)):
-         colName = "title_word_" + string(i)
+         colName = "title_word_" + str(i)
          processedRecord[colName] = 1 if titleVocab[i] in titleWords else 0
       textWords = parseTextBlock(record["text"])
       for i in range(0, len(textVocab)):
-         colName = "text_word_" + string(i)
+         colName = "text_word_" + str(i)
          processedRecord[colName] = 1 if textVocab[i] in textWords else 0
    else:
       processedRecord = record
