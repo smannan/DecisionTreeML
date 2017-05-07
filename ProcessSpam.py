@@ -1,5 +1,6 @@
 #!/usr/bin/python
 from __future__ import unicode_literals
+import decision_tree
 import sys
 import os
 import re
@@ -256,6 +257,13 @@ def main():
       cutoff  = len(allDocs)/3
       print("creating test and training sets")
       testSet, trainingSet = allDocs[:cutoff ], allDocs[cutoff:]
+      tree = ML()
+      print("training decision tree")
+      tree.train(trainingSet)
+      print("getting accuracy")
+      print(tree.accuracy(testSet))
+      print("getting f1 score")
+      print(tree.getF1(tree.getStats('1783',testSet))
       #print(len(testSet))
       #print(len(trainingSet))
       print("done")
