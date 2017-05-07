@@ -17,6 +17,9 @@ def getPostCount(id, allPosts):
       if post["author_id"] == id:
          count = count +1
    return count
+
+#def getLabel(doc):
+   
    
 def getPostsByTopEntities(topEntities, dirName, potName):
    print("getting posts")
@@ -208,6 +211,9 @@ def getFeatures(docType, record):
    processedRecord = {}
    if docType == "content":
       processedRecord["author_id"] = record["author_id"]
+      processedRecord["title"] = record["title"]
+      processedRecord["text"] = record["text"]
+      """
       titleWords = parseTextBlock(record["title"])
       for i in range(0, len(titleVocab)):
          colName = "title_word_" + str(i)
@@ -216,6 +222,7 @@ def getFeatures(docType, record):
       for i in range(0, len(textVocab)):
          colName = "text_word_" + str(i)
          processedRecord[colName] = 1 if textVocab[i] in textWords else 0
+       """
    else:
       processedRecord = record
    return processedRecord
