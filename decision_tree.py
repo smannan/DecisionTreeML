@@ -224,12 +224,12 @@ class ML:
 	         count= count+1.0
 	   return count/total
 	
-    def getStats(self, classification, D):
-       tpCount = 0.0
-       tnCount = 0.0
-       fpCount = 0.0
-       fnCount = 0.0
-       for row in D:
+	def getStats(self, classification, D):
+	   tpCount = 0.0
+	   tnCount = 0.0
+	   fpCount = 0.0
+	   fnCount = 0.0
+	   for row in D:
 	      pred = self.classify(row[1], self.root)
 	      if pred == classification:
 	         #classified positive
@@ -247,7 +247,7 @@ class ML:
 	         else:
 	            #actual negative
 	            tnCount = tnCount + 1.0
-       return tpCount, tnCount, fpCount, fnCount
+	            return tpCount, tnCount, fpCount, fnCount
 
     def getF1(self, tp, tn, fp, fn):
        precision = tp / (tp + fp)
