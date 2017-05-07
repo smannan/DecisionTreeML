@@ -155,6 +155,7 @@ class ML:
 			max_reduction = 0
 			Ag = None
 			new_split = None
+			print(p0)
 
 			# determine impurity level that would 
 			# result in splitting on the attribute
