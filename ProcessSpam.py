@@ -7,7 +7,7 @@ import re
 import random
 import json
 
-COMMON_NUM = 15
+COMMON_NUM = 7
 titleVocab = []
 textVocab = []
 languages = set()
