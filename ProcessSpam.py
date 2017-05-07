@@ -257,7 +257,7 @@ def main():
       cutoff  = len(allDocs)/3
       print("creating test and training sets")
       testSet, trainingSet = allDocs[:cutoff ], allDocs[cutoff:]
-      tree = ML()
+      tree = decision_tree.ML()
       print("training decision tree")
       tree.train(trainingSet)
       print("getting accuracy")
