@@ -203,7 +203,7 @@ def getNCommonWords(words, n):
       else:
          wordCounts[word] = 1
    wordCounts = sorted([(v, k) for (k, v) in wordCounts.items()], reverse=True)
-   wordCounts = [v for (k, v) in wordCounts[:n].items()]
+   wordCounts = [v[1] for v in wordCounts[:n]]
    return wordCounts
 
 def parseTextBlock(data, numWords):
