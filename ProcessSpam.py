@@ -8,6 +8,7 @@ import json
 
 titleVocab = []
 textVocab = []
+languages = set() 
 
 def getPostCount(id, allPosts):
    count =0
@@ -20,6 +21,7 @@ def getPostsByTopEntities(topEntities, dirName, potName):
    print("getting posts")
    global titleVocab 
    global textVocab 
+   global languages
    contentFile = open(dirName +'/'+potName+'-content.json', 'r')
    content = json.load(contentFile)
    usersFile = open(dirName +'/'+potName+'-user.json', 'r')
@@ -35,6 +37,9 @@ def getPostsByTopEntities(topEntities, dirName, potName):
             uids.append(user["uid"])
             for post in content:
                if post["author_id"] == user["uid"]:
+                  titleVocab = updateVocabs(post["title"], titleVocab)
+                  textVocab = updateVocabs(post["text"], textVocab)
+                  languages.add(post["language"])
                   #post = getFeatures("content", post)
                   data.append((str(entity["id"]), post))    
    return data
@@ -187,15 +192,28 @@ def getTopMetaEntities2():
 
 def updateVocabs(data, vocab):
    data = re.sub(r'[\.;:,\-!\?]', r'', data)
+   data = data.lower()
    words = set(data.split(' '))
-   
+   allWords = set(vocab) | words
+   return list(allWords)
    
 
 def getFeatures(docType, record):
+   global titleVocab 
+   global textVocab 
    processedRecord = record
    return processedRecord
+   
+def extractFeatures(docs):
+   result = []
+   for val in docs:
+      result.append((val[0], getFeatures("content", val[1])))
+   return result
 
 def main():
+   global languages
+   global titleVocab 
+   global textVocab 
    args = sys.argv[1:]
    if not args or len(args) < 1:
     print("usage: ProcessSpam.py filename")
@@ -209,13 +227,19 @@ def main():
       #allDocs = getPostsByTopMetaEntities(entities, "gjams")
       entities = getTopEntities(20, filename, potName)
       allDocs = getPostsByTopEntities(entities, filename, potName)
+      print("cumulative summary")
+      print(languages)
+      print(len(titleVocab))
+      print(len(textVocab))
+      print("getting features")
+      allDocs = extractFeatures(allDocs)
       print("got data")
       random.shuffle(allDocs)
       cutoff  = len(allDocs)/3
       print("creating test and training sets")
       testSet, trainingSet = allDocs[:cutoff ], allDocs[cutoff:]
-      print(len(testSet))
-      print(len(trainingSet))
+      #print(len(testSet))
+      #print(len(trainingSet))
       print("done")
    else:
       print("directory %s isn't a honeypot directory" % filename)
