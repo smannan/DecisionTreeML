@@ -167,7 +167,7 @@ class ML:
 					max_reduction = p0 - pi
 					Ag = attr[i]
 					new_split = split
-
+			print("{0} reduces impurity by {1}".format(Ag, max_reduction))
 			# if the impurity reduction is not 
 			# greater than some threshold,
 			# return the majority class
