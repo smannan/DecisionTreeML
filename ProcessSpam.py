@@ -223,7 +223,8 @@ def extractFeatures(docs):
    result = []
    i=1
    for val in docs:
-      print("%d of %d" % (i, len(docs)))
+      if i%200 == 0:
+         print("%d of %d" % (i, len(docs)))
       i = i+1
       result.append((val[0], getFeatures("content", val[1])))
    return result
@@ -249,7 +250,7 @@ def main():
       print(len(textVocab))
       print("getting features")
       allDocs = extractFeatures(allDocs)
-      print(allDocs[0][1].keys())
+      #print(allDocs[0][1].keys())
       print("got data")
       random.shuffle(allDocs)
       cutoff  = len(allDocs)/3

@@ -215,6 +215,15 @@ class ML:
 					# print ('returning label {0}'.format(child.label))
 					return (child.label)
 
+	def accuracy(self, D):
+	   total = float(len(D))
+	   count = 0.0
+	   for row in D:
+	      pred = self.classify(row[1], self.root)
+	      if row[0] == pred:
+	         count= count+1
+	   return count/total
+
 
 # test filename = test_data.txt
 def main():
@@ -226,6 +235,7 @@ def main():
 	test = {'Age':'young','Has_job':'true','Own_house':'false','Credit_rating':'false'}
 	pred = tree.classify(test, tree.root)
 	print ("Predicted {0} for {1}".format(pred, test))
+	#print (tree.)
 
 if __name__ == "__main__":
 	main()
