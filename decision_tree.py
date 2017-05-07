@@ -221,9 +221,39 @@ class ML:
 	   for row in D:
 	      pred = self.classify(row[1], self.root)
 	      if row[0] == pred:
-	         count= count+1
+	         count= count+1.0
 	   return count/total
+	
+	def getStats(self, classification, D):
+       tpCount = 0.0
+       tnCount = 0.0
+       fpCount = 0.0
+       fnCount = 0.0
+       for row in D:
+	      pred = self.classify(row[1], self.root)
+	      if pred == classification:
+	         #classified positive
+	         if row[0] == classification:
+	            #actual positive
+	            tpCount = tpCount + 1.0
+	         else:
+	            #actual negative
+	            fpCount = fpCount + 1.0
+	      else:
+	         #classified negative
+	         if row[0] == classification:
+	            #actual positive
+	            fnCount = fnCount + 1.0
+	         else:
+	            #actual negative
+	            tnCount = tnCount + 1.0
+       return (tpCount, tnCount, fpCount, fnCount)
 
+    def getF1(self, tp, tn, fp, fn):
+       precision = tp / (tp + fp)
+       recall = tp / (tp + fn)
+       f1Score = (2.0 * precision * recall) / (precision + recall)
+       return f1Score
 
 # test filename = test_data.txt
 def main():
