@@ -221,7 +221,10 @@ def getFeatures(docType, record):
    
 def extractFeatures(docs):
    result = []
+   i=1
    for val in docs:
+      print("%d of %d" % (i, len(docs)))
+      i = i+1
       result.append((val[0], getFeatures("content", val[1])))
    return result
 
@@ -252,8 +255,8 @@ def main():
       cutoff  = len(allDocs)/3
       print("creating test and training sets")
       testSet, trainingSet = allDocs[:cutoff ], allDocs[cutoff:]
-      print(len(testSet))
-      print(len(trainingSet))
+      #print(len(testSet))
+      #print(len(trainingSet))
       print("done")
    else:
       print("directory %s isn't a honeypot directory" % filename)
