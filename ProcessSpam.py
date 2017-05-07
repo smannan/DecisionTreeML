@@ -10,7 +10,8 @@ import json
 COMMON_NUM = 10
 titleVocab = []
 textVocab = []
-languages = set() 
+languages = set()
+allUsers = set() 
 
 def getPostCount(id, allPosts):
    count =0
@@ -27,6 +28,7 @@ def getPostsByTopEntities(topEntities, dirName, potName):
    global titleVocab 
    global textVocab 
    global languages
+   global allUsers
    contentFile = open(dirName +'/'+potName+'-content.json', 'r')
    content = json.load(contentFile)
    usersFile = open(dirName +'/'+potName+'-user.json', 'r')
@@ -45,6 +47,7 @@ def getPostsByTopEntities(topEntities, dirName, potName):
                   titleVocab = updateVocabs(post["title"], titleVocab)
                   textVocab = updateVocabs(post["text"], textVocab)
                   languages.add(post["language"])
+                  allUsers.add(user["uid"])
                   #post = getFeatures("content", post)
                   data.append((str(entity["id"]), post))    
    return data
@@ -250,6 +253,7 @@ def extractFeatures(docs):
 
 def main():
    global languages
+   global allUsers
    global titleVocab 
    global textVocab 
    args = sys.argv[1:]
@@ -264,6 +268,7 @@ def main():
       entities = getTopEntities(20, filename, potName)
       allDocs = getPostsByTopEntities(entities, filename, potName)
       print("cumulative summary")
+      print(len(allUsers))
       print(languages)
       print(len(titleVocab))
       print(len(textVocab))
