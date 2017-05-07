@@ -220,7 +220,8 @@ class ML:
 	   count = 0.0
 	   for row in D:
 	      pred = self.classify(row[1], self.root)
-	      if unicode(row[0]) == pred:
+	      print(pred, row[0])
+	      if row[0] == pred:
 	         count= count+1.0
 	   return count/total
 	
