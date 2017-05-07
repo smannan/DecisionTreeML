@@ -247,7 +247,7 @@ class ML:
 	         else:
 	            #actual negative
 	            tnCount = tnCount + 1.0
-	            return tpCount, tnCount, fpCount, fnCount
+	   return tpCount, tnCount, fpCount, fnCount
 
 	def getF1(self, tp, tn, fp, fn):
 	   precision = tp / (tp + fp)
