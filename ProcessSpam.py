@@ -226,7 +226,7 @@ def getFeatures(docType, record):
    global textVocab 
    processedRecord = {}
    if docType == "content":
-      processedRecord["author_id"] = str(record["author_id"])
+      #processedRecord["author_id"] = str(record["author_id"])
       #processedRecord["title"] = record["title"]
       #processedRecord["text"] = record["text"]
       titleWords = parseTextBlock(record["title"], COMMON_NUM)
