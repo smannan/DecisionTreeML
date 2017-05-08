@@ -38,18 +38,17 @@ def getPostsByTopEntities(topEntities, dirName, potName):
    for entity in topEntities:
       print(i)
       i=i+1
-      uids = [] 
-      for user in users:
-         if user["ip"] in entity["ips"] and user["uid"] not in uids:
-            uids.append(user["uid"])
-            for post in content:
-               if post["author_id"] == user["uid"]:
-                  titleVocab = updateVocabs(post["title"], titleVocab)
-                  textVocab = updateVocabs(post["text"], textVocab)
-                  languages.add(post["language"])
-                  allUsers.add(user["uid"])
-                  #post = getFeatures("content", post)
-                  data.append((str(entity["id"]), post))    
+      #uids = [] 
+      for uid in entity["user_ids"]:
+         #uids.append(user["uid"])
+         for post in content:
+            if post["author_id"] == uid:
+               titleVocab = updateVocabs(post["title"], titleVocab)
+               textVocab = updateVocabs(post["text"], textVocab)
+               languages.add(post["language"])
+               allUsers.add(uid)
+               #post = getFeatures("content", post)
+               data.append((str(entity["id"]), post))    
    return data
    
    
@@ -59,19 +58,19 @@ def getTopEntities(count, dirName, potName):
    print("getting entities")
    contentFile = open(dirName +'/'+potName+'-content.json', 'r')
    content = json.load(contentFile)
-   usersFile = open(dirName +'/'+potName+'-user.json', 'r')
-   users = json.load(usersFile)
+   #usersFile = open(dirName +'/'+potName+'-user.json', 'r')
+   #users = json.load(usersFile)
    entitiesFile = open(dirName +'/'+potName+'-entities.json', 'r')
    entities = json.load(entitiesFile)
    entPostCounts = {}
    for entity in entities:
       entPostCounts[str(entity["id"])] = 0
-      uids = [] 
-      for user in users:
-         if user["ip"] in entity["ips"] and user["uid"] not in uids:
-            uids.append(user["uid"])
-            numPosts = getPostCount(user["uid"], content)
-            entPostCounts[str(entity["id"])] = entPostCounts[str(entity["id"])] + numPosts
+      #uids = [] 
+      for uid in entity["user_ids"]:
+         #if user["ip"] in entity["ips"] and user["uid"] not in uids:
+         #uids.append(user["uid"])
+         numPosts = getPostCount(uid, content)
+         entPostCounts[str(entity["id"])] = entPostCounts[str(entity["id"])] + numPosts
       print("%d %d" % (entity["id"], entPostCounts[str(entity["id"])]))
    values = sorted([(v, k) for (k, v) in entPostCounts.items()], reverse=True)
    for val in values[:count]:
