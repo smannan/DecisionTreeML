@@ -19,58 +19,25 @@ def getPostCount(id, allPosts):
       if post["author_id"] == id:
          count = count +1
    return count
-
-#def getLabel(doc):
    
-   
-def getPostsByTopEntities(topEntities, dirName, potName):
-   print("getting posts")
-   global titleVocab 
-   global textVocab 
-   global languages
-   global allUsers
+def getTopEntities(count, dirName, potName):
+   result = []
+   print("getting meta entities")
    contentFile = open(dirName +'/'+potName+'-content.json', 'r')
    content = json.load(contentFile)
    usersFile = open(dirName +'/'+potName+'-user.json', 'r')
    users = json.load(usersFile)
-   data =[]
-   i=0
-   for entity in topEntities:
-      print(i)
-      i=i+1
-      #uids = [] 
-      for uid in entity["user_ids"]:
-         #uids.append(user["uid"])
-         for post in content:
-            if post["author_id"] == uid:
-               titleVocab = updateVocabs(post["title"], titleVocab)
-               textVocab = updateVocabs(post["text"], textVocab)
-               languages.add(post["language"])
-               allUsers.add(uid)
-               #post = getFeatures("content", post)
-               data.append((str(entity["id"]), post))    
-   return data
-   
-   
-   
-def getTopEntities(count, dirName, potName):
-   result = []
-   print("getting entities")
-   contentFile = open(dirName +'/'+potName+'-content.json', 'r')
-   content = json.load(contentFile)
-   #usersFile = open(dirName +'/'+potName+'-user.json', 'r')
-   #users = json.load(usersFile)
    entitiesFile = open(dirName +'/'+potName+'-entities.json', 'r')
    entities = json.load(entitiesFile)
    entPostCounts = {}
    for entity in entities:
       entPostCounts[str(entity["id"])] = 0
-      #uids = [] 
-      for uid in entity["user_ids"]:
-         #if user["ip"] in entity["ips"] and user["uid"] not in uids:
-         #uids.append(user["uid"])
-         numPosts = getPostCount(uid, content)
-         entPostCounts[str(entity["id"])] = entPostCounts[str(entity["id"])] + numPosts
+      uids = [] 
+      for user in users:
+         if user["ip"] in entity["ips"] and user["uid"] not in uids:
+            uids.append(user["uid"])
+            numPosts = getPostCount(user["uid"], content)
+            entPostCounts[str(entity["id"])] = entPostCounts[str(entity["id"])] + numPosts
       print("%d %d" % (entity["id"], entPostCounts[str(entity["id"])]))
    values = sorted([(v, k) for (k, v) in entPostCounts.items()], reverse=True)
    for val in values[:count]:
@@ -78,46 +45,6 @@ def getTopEntities(count, dirName, potName):
    #print(result)
    print([t for t in values[:count]])
    return result
-   
-def getPostsByTopMetaEntities(topEntities, potName):
-   print("getting posts")
-   gjamsFile = open('/lib/466/spam/gjams/gjams-content.json', 'r')
-   gjamsContent = json.load(gjamsFile)
-   ggjxFile = open('/lib/466/spam/ggjx/ggjx-content.json', 'r')
-   ggjxContent = json.load(ggjxFile)
-   npcagentFile = open('/lib/466/spam/npcagent/npcagent-content.json', 'r')
-   npcagentContent = json.load(npcagentFile)
-   contentData = {"gjams":gjamsContent, "ggjx":ggjxContent, "npcagent":npcagentContent}
-   #gjamsFile2 = open('/lib/466/spam/gjams/gjams-entities.json', 'r')
-   #gjamsEntities = json.load(gjamsFile2)
-   #ggjxFile2 = open('/lib/466/spam/ggjx/ggjx-entities.json', 'r')
-   #ggjxEntities = json.load(ggjxFile2)
-   #npcagentFile2 = open('/lib/466/spam/npcagent/npcagent-entities.json', 'r')
-   #npcagentEntities = json.load(npcagentFile2)
-   #entitiesData = {"gjams":gjamsEntities, "ggjx":ggjxEntities, "npcagent":npcagentEntities}
-   gjamsFile3 = open('/lib/466/spam/gjams/gjams-user.json', 'r')
-   gjamsUsers = json.load(gjamsFile3)
-   ggjxFile3 = open('/lib/466/spam/ggjx/ggjx-user.json', 'r')
-   ggjxUsers = json.load(ggjxFile3)
-   npcagentFile3 = open('/lib/466/spam/npcagent/npcagent-user.json', 'r')
-   npcagentUsers = json.load(npcagentFile3)
-   usersData = {"gjams":gjamsUsers, "ggjx":ggjxUsers, "npcagent":npcagentUsers}
-   data = []
-   i=0
-   for entity in topEntities:
-      print(i)
-      i=i+1
-      for entIp in entity["ips"]:
-         uids = []
-         for user in usersData[potName]:
-            if user["ip"] == entIp and user["uid"] not in uids:
-               uids.append(user["uid"])
-               for post in contentData[potName]:
-                   if post["author_id"] == user["uid"]:
-                      post = getFeatures("content", post)
-                      data.append((str(entity["id"]), post))       
-   #print("%d %d" % (entity["id"], entPostCounts[str(entity["id"])]))  
-   return data
 
 def getTopMetaEntities():
    result = []
@@ -195,59 +122,6 @@ def getTopMetaEntities2():
              numPosts = getPostCount(id, contentData[idParts[0]])
              entPostCounts[str(entity["id"])] = entPostCounts[str(entity["id"])] + numPosts 
       print("%d %d" % (entity["id"], entPostCounts[str(entity["id"])]))
-   return result
-   
-def getNCommonWords(words, n):
-   wordCounts = {}
-   for word in words:
-      if word in wordCounts:
-         wordCounts[word] += 1
-      else:
-         wordCounts[word] = 1
-   wordCounts = sorted([(v, k) for (k, v) in wordCounts.items()], reverse=True)
-   wordCounts = [v[1] for v in wordCounts[:n]]
-   return wordCounts
-
-def parseTextBlock(data, numWords):
-   data = re.sub(r'[\.;:,\-!\?]', r'', data)
-   data = data.lower()
-   return getNCommonWords(data.split(' '), numWords)
-   #return list(set(data.split(' ')))
-
-def updateVocabs(data, vocab):
-   words = set(parseTextBlock(data, COMMON_NUM))
-   allWords = set(vocab) | words
-   return list(allWords)
-   
-
-def getFeatures(docType, record):
-   global titleVocab 
-   global textVocab 
-   processedRecord = {}
-   if docType == "content":
-      processedRecord["author_id"] = str(record["author_id"])
-      #processedRecord["title"] = record["title"]
-      #processedRecord["text"] = record["text"]
-      titleWords = parseTextBlock(record["title"], COMMON_NUM)
-      for i in range(0, len(titleVocab)):
-         colName = "title_word_" + str(i)
-         processedRecord[colName] = "True" if titleVocab[i] in titleWords else "False"
-      textWords = parseTextBlock(record["text"], COMMON_NUM)
-      for i in range(0, len(textVocab)):
-         colName = "text_word_" + str(i)
-         processedRecord[colName] = "True" if textVocab[i] in textWords else "False"
-   else:
-      processedRecord = record
-   return processedRecord
-   
-def extractFeatures(docs):
-   result = []
-   i=1
-   for val in docs:
-      if i%200 == 0:
-         print("%d of %d" % (i, len(docs)))
-      i = i+1
-      result.append((val[0], getFeatures("content", val[1])))
    return result
 
 def main():
