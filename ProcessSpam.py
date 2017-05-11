@@ -164,7 +164,7 @@ class ProcessSpam:
       
       if docType == "content":
          processedRecord["author_id"] = str(record["author_id"])
-         
+         processedRecord["language"] = record["language"]
          titleWords = self.parseTextBlock(record["title"], self.topwords)
          for word in self.titleVocab:
             colName = "title_word_" + word
