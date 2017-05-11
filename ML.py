@@ -173,7 +173,7 @@ class ML:
 			# if the impurity reduction is not 
 			# greater than some threshold,
 			# return the majority class
-			if max_reduction < THRESH or Ag == None:
+			if max_reduction < THRESH:
 				return Tree(str(self.find_majority_class(D)))
 
 			# can further reduce impurity within samples
