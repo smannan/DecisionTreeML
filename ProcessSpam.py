@@ -163,7 +163,7 @@ class ProcessSpam:
       processedRecord = OrderedDict()
       
       if docType == "content":
-         #processedRecord["author_id"] = str(record["author_id"])
+         processedRecord["author_id"] = str(record["author_id"])
          
          titleWords = self.parseTextBlock(record["title"], self.topwords)
          for word in self.titleVocab:
