@@ -1,197 +1,265 @@
 #!/usr/bin/python
 from __future__ import unicode_literals
-import decision_tree
+import ML
 import sys
+from collections import OrderedDict
 import os
 import re
 import random
 import json
 
-COMMON_NUM = 5
-titleVocab = []
-textVocab = []
-languages = set()
-allUsers = set() 
+class ProcessSpam:
 
-def getPostCount(id, allPosts):
-   count =0
-   for post in allPosts:
-      if post["author_id"] == id:
-         count = count +1
-   return count
+   def __init__(self):
+      self.topwords = 5
 
-#def getLabel(doc):
-   
-   
-def getPostsByTopEntities(topEntities, dirName, potName):
-   print("getting posts")
-   global titleVocab 
-   global textVocab 
-   global languages
-   global allUsers
-   contentFile = open(dirName +'/'+potName+'-content.json', 'r')
-   content = json.load(contentFile)
-   usersFile = open(dirName +'/'+potName+'-user.json', 'r')
-   users = json.load(usersFile)
-   data =[]
-   i=0
-   for entity in topEntities:
-      print(i)
-      i=i+1
-      #uids = [] 
-      for uid in entity["user_ids"]:
-         #uids.append(user["uid"])
-         for post in content:
-            if post["author_id"] == uid:
-               titleVocab = updateVocabs(post["title"], titleVocab)
-               textVocab = updateVocabs(post["text"], textVocab)
-               languages.add(post["language"])
-               allUsers.add(uid)
-               #post = getFeatures("content", post)
-               data.append((str(entity["id"]), post))    
-   return data
-   
-   
-   
-def getTopEntities(count, dirName, potName):
-   result = []
-   print("getting entities")
-   contentFile = open(dirName +'/'+potName+'-content.json', 'r')
-   content = json.load(contentFile)
-   #usersFile = open(dirName +'/'+potName+'-user.json', 'r')
-   #users = json.load(usersFile)
-   entitiesFile = open(dirName +'/'+potName+'-entities.json', 'r')
-   entities = json.load(entitiesFile)
-   entPostCounts = {}
-   for entity in entities:
-      entPostCounts[str(entity["id"])] = 0
-      #uids = [] 
-      for uid in entity["user_ids"]:
-         #if user["ip"] in entity["ips"] and user["uid"] not in uids:
-         #uids.append(user["uid"])
-         numPosts = getPostCount(uid, content)
-         entPostCounts[str(entity["id"])] = entPostCounts[str(entity["id"])] + numPosts
-      print("%d %d" % (entity["id"], entPostCounts[str(entity["id"])]))
-   values = sorted([(v, k) for (k, v) in entPostCounts.items()], reverse=True)
-   for val in values[:count]:
-      result.append(entities[int(val[1])])
-   #print(result)
-   print([t for t in values[:count]])
-   return result
-   
-   
-def getNCommonWords(words, n):
-   wordCounts = {}
-   for word in words:
-      if word in wordCounts:
-         wordCounts[word] += 1
+      self.titleVocab = set()
+      self.textVocab = set()
+      self.languages = set()
+      self.allUsers = set() 
+
+      self.entities = {}
+      self.documents = []
+      self.features = []
+      
+      self.stopwords = set(['the', 'of', 'and', 'to', 'a', 'in', \
+       'that', 'is', 'was', 'he', 'for', 'it', 'with', 'as', 'his' \
+       'on', 'be', 'at', 'by', 'i', 'you', 'an', 'your'])
+
+   # count number of posts written by a user
+   def getPostCount(self, uid, allPosts):
+      count = 0
+
+      for post in allPosts:
+         if post["author_id"] == uid:
+            count = count + 1
+
+      return count
+
+   # parse a post for title and text
+   # content, language, and users
+   def parse_post(self, post, entId, uid, titles, text, data):   
+      if entId not in titles:
+         titles[entId] = ''
+                  
+      if entId not in text: 
+         text[entId] = ''
+                  
+      titles[entId] += post["title"]
+      text[entId] += post["text"]
+      
+      self.languages.add(post["language"])
+      self.allUsers.add(uid)
+
+      data.append((str(entId), post)) 
+
+   # returns a list tuples (entity, post)
+   def getPostsByTopEntities(self, dirName, potName):
+      print("getting posts")
+      
+      contentFile = open(dirName + '/' + potName + '-content.json', 'r')
+      content = json.load(contentFile)
+      
+      print("number of entities {0} and number of posts {1}\n". \
+       format(len(self.entities), len(content)))
+
+      usersFile = open(dirName + '/' + potName + '-user.json', 'r')
+      users = json.load(usersFile)
+      
+      data = []
+      titles = {}
+      text = {}  
+
+      for entity in self.entities:
+         # each entity has a list of user ids
+         for uid in entity["user_ids"]:
+            
+            # go through all the content
+            for post in content:
+            
+               # if the post was written by the user
+               # add the post text, title, language, and 
+               # user id to all users    
+               if post["author_id"] == uid:
+                  self.parse_post(post, entity["id"], uid, titles, text, data)
+      
+      # create a vocabulary for top words 
+      # in titles for each entity
+      for entity in titles.keys():
+         for word in set(self.parseTextBlock(titles[entity], self.topwords)):
+	    self.titleVocab.add(word)
+      
+      # create a vocabulary for top words
+      # in content for each entity
+      for entity in text.keys():
+         for word in set(self.parseTextBlock(text[entity], self.topwords)):
+            self.textVocab.add(word)
+      
+      self.documents = data
+      return data  
+      
+   # return entities with the most posts
+   def getTopEntities(self, count, dirName, potName):
+      print ("getting entities")
+      result = []
+      contentFile = open(dirName + '/' + potName + '-content.json', 'r')
+      content = json.load(contentFile)
+      
+      entitiesFile = open(dirName + '/' + potName + '-entities.json', 'r')
+      entities = json.load(entitiesFile)
+      
+      print("number of entities {0} and number of posts {1}". \
+       format(len(entities), len(content)))
+      
+      entPostCounts = {}
+      for entity in entities:
+         entPostCounts[str(entity["id"])] = 0
+      
+         # for all users, count number of posts per user
+         # then update count for the entity   
+         for uid in entity["user_ids"]:
+            numPosts = self.getPostCount(uid, content)
+            entPostCounts[str(entity["id"])] = entPostCounts[str(entity["id"])] + numPosts
+      
+      # get top 20 entities
+      values = sorted([(v, k) for (k, v) in entPostCounts.items()], reverse=True)
+      for val in values[:count]:
+         result.append(entities[int(val[1])])
+      
+      print (', '.join([t[1] for t in values[:count]]))
+      self.entities = result
+
+      return result
+      
+   # given a list of words
+   # return the top n words
+   def getNCommonWords(self, words, n):
+      wordCounts = {}
+      for word in words:
+         
+         if word and word not in self.stopwords:
+          
+            if word in wordCounts:
+               wordCounts[word] += 1
+            else:
+               wordCounts[word] = 1
+      
+      wordCounts = sorted([(v, k) for (k, v) in wordCounts.items()], reverse=True)
+      wordCounts = [v[1] for v in wordCounts[:n]]
+      return set(wordCounts)
+
+   # given a string, remove punctuation
+   # convert to lowercase
+   # and return the top numWords
+   def parseTextBlock(self, data, numWords):
+      data = re.sub(r'[\.;:,\-!\?]', r'', data)
+      data = data.lower()
+      return self.getNCommonWords(data.split(' '), numWords)
+
+   # returns one feature
+   # ordered dict with key = attributes 
+   # and values = attribute values
+   def getFeatures(self, docType, record):
+      processedRecord = OrderedDict()
+      
+      if docType == "content":
+         processedRecord["author_id"] = str(record["author_id"])
+         
+         titleWords = self.parseTextBlock(record["title"], self.topwords)
+         for word in self.titleVocab:
+            colName = "title_word_" + word
+            processedRecord[colName] = 1 if word in titleWords else 0
+         
+         textWords = self.parseTextBlock(record["text"], self.topwords)
+         for word in self.textVocab:
+            colName = "text_word_" + word
+            processedRecord[colName] = 1 if word in textWords else 0
+      
       else:
-         wordCounts[word] = 1
-   wordCounts = sorted([(v, k) for (k, v) in wordCounts.items()], reverse=True)
-   wordCounts = [v[1] for v in wordCounts[:n]]
-   return wordCounts
+         processedRecord = record
 
-def parseTextBlock(data, numWords):
-   data = re.sub(r'[\.;:,\-!\?]', r'', data)
-   data = data.lower()
-   return getNCommonWords(data.split(' '), numWords)
-   #return list(set(data.split(' ')))
-
-def updateVocabs(data, vocab):
-   words = set(parseTextBlock(data, COMMON_NUM))
-   allWords = set(vocab) | words
-   return list(allWords)
-   
-
-def getFeatures(docType, record):
-   global titleVocab 
-   global textVocab 
-   processedRecord = {}
-   if docType == "content":
-      processedRecord["author_id"] = str(record["author_id"])
-      #processedRecord["title"] = record["title"]
-      #processedRecord["text"] = record["text"]
-      titleWords = parseTextBlock(record["title"], COMMON_NUM)
-      for i in range(0, len(titleVocab)):
-         colName = "title_word_" + str(i)
-         processedRecord[colName] = "True" if titleVocab[i] in titleWords else "False"
-      textWords = parseTextBlock(record["text"], COMMON_NUM)
-      for i in range(0, len(textVocab)):
-         colName = "text_word_" + str(i)
-         processedRecord[colName] = "True" if textVocab[i] in textWords else "False"
-   else:
-      processedRecord = record
-   return processedRecord
-   
-def extractFeatures(docs):
-   result = []
-   i=1
-   for val in docs:
-      if i%200 == 0:
-         print("%d of %d" % (i, len(docs)))
-      i = i+1
-      result.append((val[0], getFeatures("content", val[1])))
-   return result
+      return processedRecord
+      
+   # returns a list of tuples (label, feature)
+   # where label is an entity and 
+   # feature is an ordered dict
+   def extractFeatures(self, docs):
+      result = []
+      i = 1
+      
+      for val in docs:
+         if i % 200 == 0:
+            print("%d of %d" % (i, len(docs)))
+         i += 1
+         
+         result.append((val[0], self.getFeatures("content", val[1])))
+      
+      self.features = result
+      return result
 
 def main():
-   global languages
-   global allUsers
-   global titleVocab 
-   global textVocab 
+   # Need honeypot server directory
    args = sys.argv[1:]
-   if not args or len(args) < 1:
-    print("usage: ProcessSpam.py filename")
-    sys.exit(1)
+   if not args or len(args) < 1: 
+      print("usage: ProcessSpam.py filename")
+      sys.exit(1)
+   
    filename = args[0]
    potName = filename.split('/')[-1]
-   if os.path.exists(filename) and os.path.exists(filename + "/" + potName+"-content.json"):
-      #entities = getTopMetaEntities()
-      #allDocs = getPostsByTopMetaEntities(entities, "gjams")
-      entities = getTopEntities(20, filename, potName)
-      allDocs = getPostsByTopEntities(entities, filename, potName)
+
+   
+   if os.path.exists(filename) and os.path.exists(filename + "/" + potName + "-content.json"):
+      ps = ProcessSpam()
+      
+      # get top 20 entities
+      ps.getTopEntities(20, filename, potName)
+      
+      # parse vocab for text and title
+      ps.getPostsByTopEntities(filename, potName)
       print("cumulative summary")
-      print(len(allUsers))
-      print(languages)
-      print(len(titleVocab))
-      print(len(textVocab))
+      print("Number of users {0}".format(len(ps.allUsers)))
+      print("All languages {0}".format(', '.join(ps.languages)))
+      print("Number of words in entity title {0} : {1}".format(len(ps.titleVocab), ', '.join(list(ps.titleVocab)[:5])))
+      print("Number of words in text vocab {0} : {1}\n".format(len(ps.textVocab), ', '.join(list(ps.textVocab)[:5])))
+
+      # extract features
       print("getting features")
-      allDocs = extractFeatures(allDocs)
-      #print(allDocs[0][1].keys())
+      ps.extractFeatures(ps.documents)
+      test1 = ps.features[random.randint(0, len(ps.features) - 1)]
+      print("Test features")
+      print("Number of attributes {0}".format(len(test1[1].keys())))
+      test2 = ps.features[random.randint(0, len(ps.features) - 1)]
+      print("Number of attributes {0}".format(len(test2[1].keys())))
+      print("Same attributes {0}\n".format(test1[1].keys() == test2[1].keys()))
+
       print("got data")
-      random.shuffle(allDocs)
-      cutoff  = len(allDocs)/3
+      random.shuffle(ps.features)
+      cutoff  = len(ps.features)/3
       print("creating test and training sets")
-      testSet, trainingSet = allDocs[:cutoff ], allDocs[cutoff:]
-      tree = decision_tree.ML()
+      testSet, trainingSet = ps.features[:cutoff ], ps.features[cutoff:]
+      print("All {0} training {1} testing {2}\n".format(len(ps.features), len(trainingSet), len(testSet)))
+      
+      tree = ML.ML()
       print("training decision tree")
       tree.train(trainingSet)
-      #tree.post_traversal(tree.root, 0)
       print("getting accuracy")
       print(tree.accuracy(testSet))
       print("getting f1 score")
-      #print(type(testSet[0][0]))
       print(testSet[0][0])
       tp, tn, fp, fn = tree.getStats(testSet[0][0],testSet)
       print(tp, tn, fp, fn)
-      if(tp>0):
+      
+      if(tp > 0):
          print(tree.getF1(tp, tn, fp, fn))
+      
       else:
-         print("No true positivex")
-      #print(len(testSet))
-      #print(len(trainingSet))
+         print("No true positive")
+   
       print("done")
+   
    else:
       print("directory %s isn't a honeypot directory" % filename)
       sys.exit(1)
-   #usersFile = open('/lib/466/spam/gjams/gjams-user.json', 'r')
-   #users = json.load(usersFile)
-   #accessFile = open('/lib/466/spam/gjams/gjams-access.json', 'r')
-   #access = json.load(accessFile)
-   #contentFile = open('/lib/466/spam/gjams/gjams-content.json', 'r')
-   #content = json.load(contentFile)
-   #entitiesFile = open('/lib/466/spam/gjams/gjams-entities.json', 'r')
-   #entities = json.load(entitiesFile)
-
 
 if __name__ == '__main__':
   main()
