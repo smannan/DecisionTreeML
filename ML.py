@@ -179,7 +179,7 @@ class ML:
 			# can further reduce impurity within samples
 			else:
 				feat = new_split.keys()
-				Tg = Tree(str(Ag))
+				Tg = Tree(unicode(Ag))
 				T.children.append(Tg)
 
 				for key, split in new_split.items():
