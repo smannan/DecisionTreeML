@@ -164,7 +164,6 @@ class ProcessSpam:
       if docType == "content":
          #processedRecord["author_id"] = str(record["author_id"])
          #processedRecord["hits"] = record["author_id"]
-         """
          for author in self.allUsers:
             colName = "author_id_" + str(author)
             processedRecord[colName] = 1 if author == record["author_id"] else 0
@@ -177,7 +176,7 @@ class ProcessSpam:
             colName = "title_word_" + word
             processedRecord[colName] = titleWords.count(word) if word in titleWords else 0
          
-         """
+         
          # textWords = self.parseTextBlock(record["text"], self.topwords)
          textWords = re.sub(r'[\.;:,\-!\?]', r'', record["text"]). \
           lower().split(' ')
