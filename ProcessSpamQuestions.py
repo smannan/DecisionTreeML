@@ -192,11 +192,18 @@ class ProcessSpam:
          processedRecord = record
 
       return processedRecord
+   
+   def printToCSV(self, data, pot):
+      with open(pot+'.csv','wb') as file:
+         file.write('postLength,hits')
+         for row in data:
+           file.write(str(row[0]) + "," + str(row[1]))
+           file.write('\n')
       
    # returns a list of tuples (label, feature)
    # where label is an entity and 
    # feature is an ordered dict
-   def extractFeatures(self, docs):
+   def extractFeatures(self, docs, pot):
       result = []
       i = 1
       
@@ -219,7 +226,8 @@ class ProcessSpam:
       wordCounts = sorted([(v, k) for (k, v) in textWordCounts.items()], reverse=True)
       print(", ".join([v for (k, v) in wordCounts[:21]]))
       postCounts = sorted([(v, k) for (k, v) in textLenAndHits], reverse=True)
-      print(postCounts[:60])
+      self.printToCSV(postCounts[:60], pot)
+      print("data in csv")
 
       self.features = result
       return result
@@ -251,7 +259,7 @@ def main():
 
       # extract features
       print("getting features")
-      ps.extractFeatures(ps.documents)
+      ps.extractFeatures(ps.documents, potName)
       test1 = ps.features[random.randint(0, len(ps.features) - 1)]
       print("Test features")
       print("Number of attributes {0}".format(len(test1[1].keys())))
