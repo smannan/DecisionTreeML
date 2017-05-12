@@ -163,7 +163,8 @@ class ProcessSpam:
       
       if docType == "content":
          #processedRecord["author_id"] = str(record["author_id"])
-         processedRecord["hits"] = record["author_id"]
+         #processedRecord["hits"] = record["author_id"]
+         """
          for author in self.allUsers:
             colName = "author_id_" + str(author)
             processedRecord[colName] = 1 if author == record["author_id"] else 0
@@ -175,12 +176,12 @@ class ProcessSpam:
          for word in sorted(self.titleVocab):
             colName = "title_word_" + word
             processedRecord[colName] = titleWords.count(word) if word in titleWords else 0
-         
+         """
          
          # textWords = self.parseTextBlock(record["text"], self.topwords)
          textWords = re.sub(r'[\.;:,\-!\?]', r'', record["text"]). \
           lower().split(' ')
-         processedRecord["postLength"] = len(textWords)
+         #processedRecord["postLength"] = len(textWords)
          
          for word in sorted(self.textVocab):
             colName = "text_word_" + word
@@ -203,6 +204,7 @@ class ProcessSpam:
             print("%d of %d" % (i, len(docs)))
          i += 1
          result.append((val[0], self.getFeatures("content", val[1])))
+      """
       textWordCounts = {}
       textLenAndHits = []
       for val in result:
@@ -217,6 +219,7 @@ class ProcessSpam:
       print(wordCounts[:5])
       postCounts = sorted([(v, k) for (k, v) in textLenAndHits], reverse=True)
       print(postCounts[:60])
+      """
       self.features = result
       return result
 
@@ -260,6 +263,7 @@ def main():
       cutoff  = int(len(ps.features) / 3)
       print("creating test and training sets")
       testSet, trainingSet = ps.features[:cutoff ], ps.features[cutoff:]
+      """
       entitySets = {}
       entityAccuracies = []
       for sample in ps.features:
@@ -267,18 +271,20 @@ def main():
             entitySets[sample[0]] = [sample]
          else:
             entitySets[sample[0]].append(sample)
-      
+      """
       print("All {0} training {1} testing {2}\n".format(len(ps.features), len(trainingSet), len(testSet)))
       
       NB = MLQuestions.ML()
       print("training nb classifier")
       NB.train(trainingSet)
       print("getting accuracy")
+      """
       for eSetItem in entitySets.items():
          sample = eSetItem[0]
          entityAccuracies.append((sample, NB.accuracy(eSetItem[1])))
       entityCounts = sorted([(v, k) for (k, v) in entityAccuracies], reverse=True)
       print(entityCounts)
+      """
       print (NB.accuracy(testSet))
       print("getting f1 score")
       tp, tn, fp, fn = NB.getStats(testSet[0][0],testSet)
