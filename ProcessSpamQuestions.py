@@ -210,7 +210,7 @@ class ProcessSpam:
          #textLenAndHits.append((val[1]["hits"], val[1]["postLength"]))
          wordKeys = [key[10:] for key in val[1].keys() if "text_word_" in key]
          for word in wordKeys:
-            if word not in textWordCounts:
+            if word not in textWordCounts and word not in self.stopwords:
                textWordCounts[word] = val[1]["text_word_"+word]
             else:
                textWordCounts[word] += val[1]["text_word_"+word]
