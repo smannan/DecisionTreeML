@@ -1,6 +1,8 @@
-#!/usr/bin/python
+#!/usr/local/bin/python3
 from __future__ import unicode_literals
-import ML
+import decision_tree
+import NaiveBayes
+import decision_tree
 import sys
 from collections import OrderedDict
 import os
@@ -11,7 +13,7 @@ import json
 class ProcessSpam:
 
    def __init__(self):
-      self.topwords = 5
+      self.topwords = 20
 
       self.titleVocab = set()
       self.textVocab = set()
@@ -21,7 +23,7 @@ class ProcessSpam:
       self.entities = {}
       self.documents = []
       self.features = []
-      
+
       self.stopwords = set(['the', 'of', 'and', 'to', 'a', 'in', \
        'that', 'is', 'was', 'he', 'for', 'it', 'with', 'as', 'his' \
        'on', 'be', 'at', 'by', 'i', 'you', 'an', 'your'])
@@ -86,8 +88,7 @@ class ProcessSpam:
       # create a vocabulary for top words 
       # in titles for each entity
       for entity in titles.keys():
-         for word in set(self.parseTextBlock(titles[entity], self.topwords)):
-	    self.titleVocab.add(word)
+         for word in set(self.parseTextBlock(titles[entity], self.topwords)): self.titleVocab.add(word)
       
       # create a vocabulary for top words
       # in content for each entity
@@ -136,9 +137,7 @@ class ProcessSpam:
    def getNCommonWords(self, words, n):
       wordCounts = {}
       for word in words:
-         
          if word and word not in self.stopwords:
-          
             if word in wordCounts:
                wordCounts[word] += 1
             else:
@@ -163,17 +162,23 @@ class ProcessSpam:
       processedRecord = OrderedDict()
       
       if docType == "content":
-         processedRecord["author_id"] = str(record["author_id"])
-         processedRecord["language"] = record["language"]
-         titleWords = self.parseTextBlock(record["title"], self.topwords)
-         for word in self.titleVocab:
-            colName = "title_word_" + word
-            processedRecord[colName] = 1 if word in titleWords else 0
+         # processedRecord["author_id"] = str(record["author_id"])
          
-         textWords = self.parseTextBlock(record["text"], self.topwords)
-         for word in self.textVocab:
+         # titleWords = self.parseTextBlock(record["title"], self.topwords)
+         titleWords = re.sub(r'[\.;:,\-!\?]', r'', record["title"]). \
+          lower().split(' ')
+         
+         for word in sorted(self.titleVocab):
+            colName = "title_word_" + word
+            processedRecord[colName] = titleWords.count(word) if word in titleWords else 0
+         
+         # textWords = self.parseTextBlock(record["text"], self.topwords)
+         textWords = re.sub(r'[\.;:,\-!\?]', r'', record["text"]). \
+          lower().split(' ')
+         
+         for word in sorted(self.textVocab):
             colName = "text_word_" + word
-            processedRecord[colName] = 1 if word in textWords else 0
+            processedRecord[colName] = textWords.count(word) if word in textWords else 0
       
       else:
          processedRecord = record
@@ -234,27 +239,43 @@ def main():
 
       print("got data")
       random.shuffle(ps.features)
-      cutoff  = len(ps.features)/3
+      cutoff  = int(len(ps.features) / 3)
       print("creating test and training sets")
       testSet, trainingSet = ps.features[:cutoff ], ps.features[cutoff:]
       print("All {0} training {1} testing {2}\n".format(len(ps.features), len(trainingSet), len(testSet)))
       
-      tree = ML.ML()
-      print("training decision tree")
+      NB = NaiveBayes.ML()
+      print("training nb classifier")
+      NB.train(trainingSet)
+      print("getting accuracy")
+      print (NB.accuracy(testSet))
+      print("getting f1 score")
+      tp, tn, fp, fn = NB.getStats(testSet[0][0],testSet)
+      print("True positive: {0}\nTrue negative: {1}\nFalse positive: {2}\nFalse negative {3}\n".format(tp, tn, fp, fn))
+      
+      if(tp > 0):
+         print("F1 score: {0}".format(NB.getF1(tp, tn, fp, fn)))
+      
+      else:
+         print("No true positive")
+
+      '''tree = decision_tree.ML()
+      print("training nb classifier")
       tree.train(trainingSet)
       print("getting accuracy")
-      print(tree.accuracy(testSet))
+      print (tree.accuracy(testSet))
       print("getting f1 score")
       print(testSet[0][0])
       tp, tn, fp, fn = tree.getStats(testSet[0][0],testSet)
       print(tp, tn, fp, fn)
-      
+
       if(tp > 0):
          print(tree.getF1(tp, tn, fp, fn))
-      
+
       else:
          print("No true positive")
-   
+      '''
+      
       print("done")
    
    else:
