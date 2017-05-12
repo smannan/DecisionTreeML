@@ -201,16 +201,15 @@ class ProcessSpam:
          if i % 200 == 0:
             print("%d of %d" % (i, len(docs)))
          i += 1
-         print(self.getFeatures("content", val[1]))
          result.append((val[0], self.getFeatures("content", val[1])))
       textWordCounts = {}
       for val in result:
          wordKeys = [key[10:] for key in val[1].keys() if "text_word_" in key]
          for word in wordKeys:
             if word not in textWordCounts:
-               textWordCounts[word] = val[1][word]
+               textWordCounts[word] = val[1]["text_word_"+word]
             else:
-               textWordCounts[word] += val[1][word]
+               textWordCounts[word] += val[1]["text_word_"+word]
       wordCounts = sorted([(v, k) for (k, v) in textWordCounts.items()], reverse=True)
       print(wordCounts[:5])
       self.features = result
