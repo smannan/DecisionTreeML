@@ -208,8 +208,11 @@ class ProcessSpam:
          wordKeys = [key[10:] for key in val[1].keys() if "text_word_" in key]
          for word in wordKeys:
             if word not in textWordCounts:
-               textWordCounts[word] = 0
-      print(textWordCounts.keys())
+               textWordCounts[word] = val[1][word]
+            else:
+               textWordCounts[word] += val[1][word]
+      wordCounts = sorted([(v, k) for (k, v) in textWordCounts.items()], reverse=True)
+      print(wordCounts[:5])
       self.features = result
       return result
 
