@@ -201,7 +201,7 @@ class ProcessSpam:
          if i % 200 == 0:
             print("%d of %d" % (i, len(docs)))
          i += 1
-         
+         print(self.getFeatures("content", val[1]))
          result.append((val[0], self.getFeatures("content", val[1])))
       textWordCounts = {}
       for val in result:
