@@ -227,7 +227,8 @@ class ProcessSpam:
       wordCounts = sorted([(v, k) for (k, v) in textWordCounts.items()], reverse=True)
       print(", ".join([v for (k, v) in wordCounts[:21]]))
       postCounts = sorted([(v, k) for (k, v) in textLenAndHits], reverse=True)
-      self.printToCSV(postCounts[:60], pot)
+      #self.printToCSV(postCounts[:60], pot)
+      print(postCounts[:60])
       print("data in csv")
 
       self.features = result
