@@ -165,7 +165,7 @@ class ProcessSpam:
       
       if docType == "content":
          #processedRecord["author_id"] = str(record["author_id"])
-         #processedRecord["hits"] = record["author_id"]
+         processedRecord["hits"] = record["hits"]
          for author in self.allUsers:
             colName = "author_id_" + str(author)
             processedRecord[colName] = 1 if author == record["author_id"] else 0
@@ -182,7 +182,7 @@ class ProcessSpam:
          # textWords = self.parseTextBlock(record["text"], self.topwords)
          textWords = re.sub(r'[\.;:,\-!\?]', r'', record["text"]). \
           lower().split(' ')
-         #processedRecord["postLength"] = len(textWords)
+         processedRecord["postLength"] = len(textWords)
          
          for word in sorted(self.textVocab):
             colName = "text_word_" + word
@@ -209,7 +209,7 @@ class ProcessSpam:
       textWordCounts = {}
       textLenAndHits = []
       for val in result:
-         #textLenAndHits.append((val[1]["hits"], val[1]["postLength"]))
+         textLenAndHits.append((val[1]["hits"], val[1]["postLength"]))
          wordKeys = [key[10:] for key in val[1].keys() if "text_word_" in key]
          for word in wordKeys:
             if word not in textWordCounts and word not in self.stopwords:
@@ -218,8 +218,8 @@ class ProcessSpam:
                textWordCounts[word] += val[1]["text_word_"+word]
       wordCounts = sorted([(v, k) for (k, v) in textWordCounts.items()], reverse=True)
       print(", ".join([v for (k, v) in wordCounts[:21]]))
-      #postCounts = sorted([(v, k) for (k, v) in textLenAndHits], reverse=True)
-      #print(postCounts[:60])
+      postCounts = sorted([(v, k) for (k, v) in textLenAndHits], reverse=True)
+      print(postCounts[:60])
 
       self.features = result
       return result
