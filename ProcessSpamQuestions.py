@@ -162,7 +162,7 @@ class ProcessSpam:
       processedRecord = OrderedDict()
       
       if docType == "content":
-         processedRecord["author_id"] = str(record["author_id"])
+         #processedRecord["author_id"] = str(record["author_id"])
          for author in self.allUsers:
             colName = "author_id_" + str(author)
             processedRecord[colName] = 1 if author == record["author_id"] else 0
