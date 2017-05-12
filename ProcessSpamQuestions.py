@@ -164,7 +164,7 @@ class ProcessSpam:
       if docType == "content":
          processedRecord["author_id"] = str(record["author_id"])
          for author in self.allUsers:
-            colName = "author_id_" + author
+            colName = "author_id_" + str(author)
             processedRecord[colName] = 1 if author == record["author_id"] else 0
          
          # titleWords = self.parseTextBlock(record["title"], self.topwords)
