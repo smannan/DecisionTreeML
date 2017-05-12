@@ -167,14 +167,14 @@ class ProcessSpam:
          for author in self.allUsers:
             colName = "author_id_" + str(author)
             processedRecord[colName] = 1 if author == record["author_id"] else 0
-         """
+         
          # titleWords = self.parseTextBlock(record["title"], self.topwords)
          titleWords = re.sub(r'[\.;:,\-!\?]', r'', record["title"]). \
           lower().split(' ')
          
          for word in sorted(self.titleVocab):
             colName = "title_word_" + word
-            processedRecord[colName] = titleWords.count(word) if word in titleWords else 0
+            processedRecord[colName] = titleWords.count(word) if word in titleWords and word not in self.stopwords else 0
          
          
          # textWords = self.parseTextBlock(record["text"], self.topwords)
@@ -184,8 +184,8 @@ class ProcessSpam:
          
          for word in sorted(self.textVocab):
             colName = "text_word_" + word
-            processedRecord[colName] = textWords.count(word) if word in textWords else 0
-         """
+            processedRecord[colName] = textWords.count(word) if word in textWords and word not in self.stopwords else 0
+         
       else:
          processedRecord = record
 

@@ -178,7 +178,7 @@ class ProcessSpam:
          
          for word in sorted(self.textVocab):
             colName = "text_word_" + word
-            processedRecord[colName] = textWords.count(word) if word in textWords else 0
+            processedRecord[colName] = textWords.count(word) if word in textWords  else 0
       
       else:
          processedRecord = record
