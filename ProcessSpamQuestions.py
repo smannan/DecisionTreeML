@@ -203,11 +203,11 @@ class ProcessSpam:
             print("%d of %d" % (i, len(docs)))
          i += 1
          result.append((val[0], self.getFeatures("content", val[1])))
-      """
+    
       textWordCounts = {}
       textLenAndHits = []
       for val in result:
-         textLenAndHits.append((val[1]["hits"], val[1]["postLength"]))
+         #textLenAndHits.append((val[1]["hits"], val[1]["postLength"]))
          wordKeys = [key[10:] for key in val[1].keys() if "text_word_" in key]
          for word in wordKeys:
             if word not in textWordCounts:
@@ -216,9 +216,9 @@ class ProcessSpam:
                textWordCounts[word] += val[1]["text_word_"+word]
       wordCounts = sorted([(v, k) for (k, v) in textWordCounts.items()], reverse=True)
       print(wordCounts[:5])
-      postCounts = sorted([(v, k) for (k, v) in textLenAndHits], reverse=True)
-      print(postCounts[:60])
-      """
+      #postCounts = sorted([(v, k) for (k, v) in textLenAndHits], reverse=True)
+      #print(postCounts[:60])
+
       self.features = result
       return result
 
