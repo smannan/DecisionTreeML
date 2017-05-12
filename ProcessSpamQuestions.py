@@ -1,5 +1,6 @@
 #!/usr/local/bin/python3
 from __future__ import unicode_literals
+from nltk.corpus import stopwords
 #import decision_tree
 #import NaiveBayes
 import MLQuestions
@@ -27,6 +28,7 @@ class ProcessSpam:
       self.stopwords = set(['the', 'of', 'and', 'to', 'a', 'in', \
        'that', 'is', 'was', 'he', 'for', 'it', 'with', 'as', 'his', 'are', 'have', 'this', 'or', 'can', 'not', \
        'on', 'be', 'at', 'by', 'i', 'you', 'an', 'your'])
+      self.stopwords = set(stopwords.words('english'))
 
    # count number of posts written by a user
    def getPostCount(self, uid, allPosts):
