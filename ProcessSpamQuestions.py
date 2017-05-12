@@ -255,12 +255,24 @@ def main():
       cutoff  = int(len(ps.features) / 3)
       print("creating test and training sets")
       testSet, trainingSet = ps.features[:cutoff ], ps.features[cutoff:]
+      entitySets = {}
+      entityAccuracies = []
+      for sample in ps.features:
+         if sample[0] not in entitySets:
+            entitySets[sample[0]] = [sample]
+         else:
+            entitySets[sample[0]].append(sample)
+      
       print("All {0} training {1} testing {2}\n".format(len(ps.features), len(trainingSet), len(testSet)))
       
       NB = MLQuestions.ML()
       print("training nb classifier")
       NB.train(trainingSet)
       print("getting accuracy")
+      for eSetItem in entitySets.items():
+         sample = eSetItem[0]
+         entityAccuracies.append((sample, (NB.accuracy(eSetItem[1])))
+      print(entityAccuracies)
       print (NB.accuracy(testSet))
       print("getting f1 score")
       tp, tn, fp, fn = NB.getStats(testSet[0][0],testSet)
