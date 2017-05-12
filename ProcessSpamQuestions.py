@@ -194,9 +194,10 @@ class ProcessSpam:
       return processedRecord
    
    def printToCSV(self, data, pot):
-      with open(pot+'.csv','wb') as file:
-         file.write('postLength,hits')
+      with open(pot+'.csv','w') as file:
+         file.write('postLength,hits\n')
          for row in data:
+           file.write
            file.write(str(row[0]) + "," + str(row[1]))
            file.write('\n')
       
