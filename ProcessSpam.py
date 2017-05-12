@@ -1,8 +1,8 @@
 #!/usr/local/bin/python3
 from __future__ import unicode_literals
-import decision_tree
-import NaiveBayes
-import decision_tree
+#import decision_tree
+#import NaiveBayes
+import ML
 import sys
 from collections import OrderedDict
 import os
