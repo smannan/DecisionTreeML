@@ -163,7 +163,7 @@ class ProcessSpam:
       
       if docType == "content":
          #processedRecord["author_id"] = str(record["author_id"])
-         """
+         
          for author in self.allUsers:
             colName = "author_id_" + str(author)
             processedRecord[colName] = 1 if author == record["author_id"] else 0
@@ -175,7 +175,7 @@ class ProcessSpam:
          for word in sorted(self.titleVocab):
             colName = "title_word_" + word
             processedRecord[colName] = titleWords.count(word) if word in titleWords else 0
-         """
+         
          
          # textWords = self.parseTextBlock(record["text"], self.topwords)
          textWords = re.sub(r'[\.;:,\-!\?]', r'', record["text"]). \
@@ -203,7 +203,13 @@ class ProcessSpam:
          i += 1
          
          result.append((val[0], self.getFeatures("content", val[1])))
-      
+      textWordCounts = {}
+      for val in result:
+         wordKeys = [key[10:] for key in val[1].keys() if "text_word_" in key]
+         for word in wordKeys:
+            if word not in textWordCounts:
+               textWordCounts[word] = 0
+      print(textWordCounts.keys())
       self.features = result
       return result
 
