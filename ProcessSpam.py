@@ -244,7 +244,7 @@ def main():
       testSet, trainingSet = ps.features[:cutoff ], ps.features[cutoff:]
       print("All {0} training {1} testing {2}\n".format(len(ps.features), len(trainingSet), len(testSet)))
       
-      NB = NaiveBayes.ML()
+      NB = ML.ML()
       print("training nb classifier")
       NB.train(trainingSet)
       print("getting accuracy")
