@@ -25,9 +25,9 @@ class ProcessSpam:
       self.documents = []
       self.features = []
 
-      self.stopwords = set(['the', 'of', 'and', 'to', 'a', 'in', \
-       'that', 'is', 'was', 'he', 'for', 'it', 'with', 'as', 'his', 'are', 'have', 'this', 'or', 'can', 'not', \
-       'on', 'be', 'at', 'by', 'i', 'you', 'an', 'your'])
+      #self.stopwords = set(['the', 'of', 'and', 'to', 'a', 'in', \
+      # 'that', 'is', 'was', 'he', 'for', 'it', 'with', 'as', 'his', 'are', 'have', 'this', 'or', 'can', 'not', \
+      # 'on', 'be', 'at', 'by', 'i', 'you', 'an', 'your'])
       self.stopwords = set(stopwords.words('english'))
 
    # count number of posts written by a user
