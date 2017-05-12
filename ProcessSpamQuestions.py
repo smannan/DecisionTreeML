@@ -163,7 +163,7 @@ class ProcessSpam:
       
       if docType == "content":
          #processedRecord["author_id"] = str(record["author_id"])
-         
+         processedRecord["hits"] = record["author_id"]
          for author in self.allUsers:
             colName = "author_id_" + str(author)
             processedRecord[colName] = 1 if author == record["author_id"] else 0
@@ -180,6 +180,7 @@ class ProcessSpam:
          # textWords = self.parseTextBlock(record["text"], self.topwords)
          textWords = re.sub(r'[\.;:,\-!\?]', r'', record["text"]). \
           lower().split(' ')
+         processedRecord["postLength"] = len(textWords)
          
          for word in sorted(self.textVocab):
             colName = "text_word_" + word
@@ -203,7 +204,9 @@ class ProcessSpam:
          i += 1
          result.append((val[0], self.getFeatures("content", val[1])))
       textWordCounts = {}
+      textLenAndHits = []
       for val in result:
+         textLenAndHits.append((val[1]["hits"], val[1]["postLength"]))
          wordKeys = [key[10:] for key in val[1].keys() if "text_word_" in key]
          for word in wordKeys:
             if word not in textWordCounts:
@@ -212,6 +215,8 @@ class ProcessSpam:
                textWordCounts[word] += val[1]["text_word_"+word]
       wordCounts = sorted([(v, k) for (k, v) in textWordCounts.items()], reverse=True)
       print(wordCounts[:5])
+      postCounts = sorted([(v, k) for (k, v) in textLenAndHits], reverse=True)
+      print(postCounts[:30])
       self.features = result
       return result
 
