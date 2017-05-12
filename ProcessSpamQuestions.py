@@ -216,7 +216,7 @@ class ProcessSpam:
       wordCounts = sorted([(v, k) for (k, v) in textWordCounts.items()], reverse=True)
       print(wordCounts[:5])
       postCounts = sorted([(v, k) for (k, v) in textLenAndHits], reverse=True)
-      print(postCounts[:30])
+      print(postCounts[:60])
       self.features = result
       return result
 
