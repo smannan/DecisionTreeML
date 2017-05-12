@@ -217,7 +217,7 @@ class ProcessSpam:
             else:
                textWordCounts[word] += val[1]["text_word_"+word]
       wordCounts = sorted([(v, k) for (k, v) in textWordCounts.items()], reverse=True)
-      print([v for (k, v) in wordCounts[:20].items()]].join(", "))
+      print([v for (k, v) in wordCounts[:20].items()].join(", "))
       #postCounts = sorted([(v, k) for (k, v) in textLenAndHits], reverse=True)
       #print(postCounts[:60])
 
