@@ -168,20 +168,20 @@ class ProcessSpam:
             processedRecord[colName] = 1 if author == record["author_id"] else 0
          
          # titleWords = self.parseTextBlock(record["title"], self.topwords)
-         #titleWords = re.sub(r'[\.;:,\-!\?]', r'', record["title"]). \
-         # lower().split(' ')
+         titleWords = re.sub(r'[\.;:,\-!\?]', r'', record["title"]). \
+          lower().split(' ')
          
-         #for word in sorted(self.titleVocab):
-         #   colName = "title_word_" + word
-         #   processedRecord[colName] = titleWords.count(word) if word in titleWords else 0
+         for word in sorted(self.titleVocab):
+            colName = "title_word_" + word
+            processedRecord[colName] = titleWords.count(word) if word in titleWords else 0
          
          # textWords = self.parseTextBlock(record["text"], self.topwords)
-         #textWords = re.sub(r'[\.;:,\-!\?]', r'', record["text"]). \
-         # lower().split(' ')
+         textWords = re.sub(r'[\.;:,\-!\?]', r'', record["text"]). \
+          lower().split(' ')
          
-         #for word in sorted(self.textVocab):
-         #   colName = "text_word_" + word
-         #   processedRecord[colName] = textWords.count(word) if word in textWords else 0
+         for word in sorted(self.textVocab):
+            colName = "text_word_" + word
+            processedRecord[colName] = textWords.count(word) if word in textWords else 0
       
       else:
          processedRecord = record
