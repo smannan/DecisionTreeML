@@ -272,7 +272,7 @@ def main():
       for eSetItem in entitySets.items():
          sample = eSetItem[0]
          entityAccuracies.append((sample, (NB.accuracy(eSetItem[1])))
-      print(entityAccuracies)
+      print (entityAccuracies)
       print (NB.accuracy(testSet))
       print("getting f1 score")
       tp, tn, fp, fn = NB.getStats(testSet[0][0],testSet)
