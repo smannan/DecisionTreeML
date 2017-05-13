@@ -1,0 +1,6 @@
+Sonia Manna
+Clay Jacobs
+
+Spam Entity Classification Based on Text Features
+
+This project contains a naive bayes algorithm for classifying spam entities based on author id, title, and post content. The data can be found here with a description. 
