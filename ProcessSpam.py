@@ -57,14 +57,10 @@ class ProcessSpam:
 
    # returns a list tuples (entity, post)
    def getPostsByTopEntities(self, dirName, potName):
-      print("getting posts")
       
       contentFile = open(dirName + '/' + potName + '-content.json', 'r')
       content = json.load(contentFile)
       
-      print("number of entities {0} and number of posts {1}\n". \
-       format(len(self.entities), len(content)))
-
       usersFile = open(dirName + '/' + potName + '-user.json', 'r')
       users = json.load(usersFile)
       
@@ -110,8 +106,6 @@ class ProcessSpam:
       entitiesFile = open(dirName + '/' + potName + '-entities.json', 'r')
       entities = json.load(entitiesFile)
       
-      print("number of entities {0} and number of posts {1}". \
-       format(len(entities), len(content)))
       
       entPostCounts = {}
       for entity in entities:
