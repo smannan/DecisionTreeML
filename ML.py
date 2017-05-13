@@ -84,7 +84,7 @@ class ML():
    def getF1(self, tp, tn, fp, fn):
       precision = tp / (tp + fp)
       recall = tp / (tp + fn)
-      print(precision, recall)
+      print("precision: {0}\nrecall: {1}\n".format(precision, recall))
       f1Score = (2.0 * precision * recall) / (precision + recall)
       
       return f1Score
