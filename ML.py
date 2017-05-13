@@ -34,7 +34,8 @@ class ML():
    # compute the log probability vector
    # for all documents
    def predict_log_proba(self, X):
-      return (np.sum((self.feature_log_prob_ * list(X.values())), axis=1) + self.log_prior)
+      return (np.sum((self.feature_log_prob_ * list(X.values())), \ 
+       axis=1) + self.log_prior)
 
    # get the index of the largest probability for 
    # each documents and return the label

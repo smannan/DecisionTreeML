@@ -88,7 +88,8 @@ class ProcessSpam:
       # create a vocabulary for top words 
       # in titles for each entity
       for entity in titles.keys():
-         for word in set(self.parseTextBlock(titles[entity], self.topwords)): self.titleVocab.add(word)
+         for word in set(self.parseTextBlock(titles[entity], \
+          self.topwords)): self.titleVocab.add(word)
       
       # create a vocabulary for top words
       # in content for each entity
@@ -162,7 +163,9 @@ class ProcessSpam:
       processedRecord = OrderedDict()
       
       if docType == "content":
-         # processedRecord["author_id"] = str(record["author_id"])
+         for author in self.allUsers:
+            colName = "author_id_" + str(author)
+            processedRecord[colName] = 1 if author == record["author_id"] else 0
          
          # titleWords = self.parseTextBlock(record["title"], self.topwords)
          titleWords = re.sub(r'[\.;:,\-!\?]', r'', record["title"]). \
@@ -170,7 +173,8 @@ class ProcessSpam:
          
          for word in sorted(self.titleVocab):
             colName = "title_word_" + word
-            processedRecord[colName] = titleWords.count(word) if word in titleWords else 0
+            processedRecord[colName] = titleWords.count(word) if word \
+             in titleWords else 0
          
          # textWords = self.parseTextBlock(record["text"], self.topwords)
          textWords = re.sub(r'[\.;:,\-!\?]', r'', record["text"]). \
@@ -178,7 +182,8 @@ class ProcessSpam:
          
          for word in sorted(self.textVocab):
             colName = "text_word_" + word
-            processedRecord[colName] = textWords.count(word) if word in textWords  else 0
+            processedRecord[colName] = textWords.count(word) if word in \
+             textWords  else 0
       
       else:
          processedRecord = record
@@ -213,7 +218,8 @@ def main():
    potName = filename.split('/')[-1]
 
    
-   if os.path.exists(filename) and os.path.exists(filename + "/" + potName + "-content.json"):
+   if os.path.exists(filename) and os.path.exists(filename + "/" + \
+    potName + "-content.json"):
       ps = ProcessSpam()
       
       # get top 20 entities
@@ -221,35 +227,18 @@ def main():
       
       # parse vocab for text and title
       ps.getPostsByTopEntities(filename, potName)
-      print("cumulative summary")
-      print("Number of users {0}".format(len(ps.allUsers)))
-      print("All languages {0}".format(', '.join(ps.languages)))
-      print("Number of words in entity title {0} : {1}".format(len(ps.titleVocab), ', '.join(list(ps.titleVocab)[:5])))
-      print("Number of words in text vocab {0} : {1}\n".format(len(ps.textVocab), ', '.join(list(ps.textVocab)[:5])))
 
       # extract features
-      print("getting features")
       ps.extractFeatures(ps.documents)
-      test1 = ps.features[random.randint(0, len(ps.features) - 1)]
-      print("Test features")
-      print("Number of attributes {0}".format(len(test1[1].keys())))
-      test2 = ps.features[random.randint(0, len(ps.features) - 1)]
-      print("Number of attributes {0}".format(len(test2[1].keys())))
-      print("Same attributes {0}\n".format(test1[1].keys() == test2[1].keys()))
-
-      print("got data")
+      
+      # split testing/training
       random.shuffle(ps.features)
       cutoff  = int(len(ps.features) / 3)
-      print("creating test and training sets")
       testSet, trainingSet = ps.features[:cutoff ], ps.features[cutoff:]
-      print("All {0} training {1} testing {2}\n".format(len(ps.features), len(trainingSet), len(testSet)))
       
       NB = ML.ML()
-      print("training nb classifier")
       NB.train(trainingSet)
-      print("getting accuracy")
       print (NB.accuracy(testSet))
-      print("getting f1 score")
       tp, tn, fp, fn = NB.getStats(testSet[0][0],testSet)
       print("True positive: {0}\nTrue negative: {1}\nFalse positive: {2}\nFalse negative {3}\n".format(tp, tn, fp, fn))
       
@@ -258,23 +247,6 @@ def main():
       
       else:
          print("No true positive")
-
-      '''tree = decision_tree.ML()
-      print("training nb classifier")
-      tree.train(trainingSet)
-      print("getting accuracy")
-      print (tree.accuracy(testSet))
-      print("getting f1 score")
-      print(testSet[0][0])
-      tp, tn, fp, fn = tree.getStats(testSet[0][0],testSet)
-      print(tp, tn, fp, fn)
-
-      if(tp > 0):
-         print(tree.getF1(tp, tn, fp, fn))
-
-      else:
-         print("No true positive")
-      '''
       
       print("done")
    
