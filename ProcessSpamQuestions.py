@@ -194,7 +194,7 @@ class ProcessSpam:
       return processedRecord
    
    def printToCSV(self, data, pot):
-      with open(pot+'.csv','w') as file:
+      with open('../'+pot+'.csv','w') as file:
          file.write('postLength,hits\n')
          for row in data:
            file.write
@@ -227,8 +227,8 @@ class ProcessSpam:
       wordCounts = sorted([(v, k) for (k, v) in textWordCounts.items()], reverse=True)
       print(", ".join([v for (k, v) in wordCounts[:21]]))
       postCounts = sorted([(v, k) for (k, v) in textLenAndHits], reverse=True)
-      #self.printToCSV(postCounts[:60], pot)
-      print(postCounts[:60])
+      self.printToCSV(postCounts[:60], pot)
+      #print(postCounts[:60])
       print("data in csv")
 
       self.features = result
