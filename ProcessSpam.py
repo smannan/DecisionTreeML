@@ -122,7 +122,6 @@ class ProcessSpam:
       for val in values[:count]:
          result.append(entities[int(val[1])])
       
-      print (', '.join([t[1] for t in values[:count]]))
       self.entities = result
 
       return result
@@ -192,9 +191,9 @@ class ProcessSpam:
       i = 1
       
       for val in docs:
-         if i % 200 == 0:
-            print("%d of %d" % (i, len(docs)))
-         i += 1
+         #if i % 200 == 0:
+         #   print("%d of %d" % (i, len(docs)))
+         #i += 1
          
          result.append((val[0], self.getFeatures("content", val[1])))
       
